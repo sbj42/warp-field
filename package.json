@@ -1,0 +1,38 @@
+{
+  "name": "warp-field",
+  "version": "0.1.0",
+  "description": "Portal-casting field-of-view algorithm",
+  "keywords": [
+    "fov",
+    "roguelike",
+    "shadowcasting",
+    "vision",
+    "portals"
+  ],
+  "main": "build/index.js",
+  "typings": "build/index.d.ts",
+  "repository": "https://github.com/sbj42/warp-field.git",
+  "author": "James Clark <jameswclark@gmail.com>",
+  "license": "MIT",
+  "scripts": {
+    "test": "mocha --reporter min --require ts-node/register test/*.ts test/**/*.ts",
+    "lint": "tslint --project tsconfig.json --type-check",
+    "benchmark": "ts-node bench/bench-field-of-view.ts",
+    "build": "rimraf bin build && webpack && webpack -p && tsc && rimraf bin/build"
+  },
+  "devDependencies": {
+    "@types/benchmark": "^1.0.30",
+    "@types/mocha": "^2.2.41",
+    "@types/node": "^7.0.14",
+    "@types/seedrandom": "^2.4.27",
+    "benchmark": "^2.1.4",
+    "mocha": "^3.3.0",
+    "rimraf": "^2.6.1",
+    "seedrandom": "^2.4.3",
+    "ts-loader": "^2.0.3",
+    "ts-node": "^3.0.2",
+    "tslint": "^5.1.0",
+    "typescript": "^2.3.2",
+    "webpack": "^2.4.1"
+  }
+}

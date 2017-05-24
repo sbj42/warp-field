@@ -1,0 +1,47 @@
+{
+    "extends": "tslint:recommended",
+    "rules": {
+        "interface-name": [false],
+        "variable-name": [
+            true,
+            "ban-keywords",
+            "check-format",
+            "allow-leading-underscore",
+            "allow-trailing-underscore"
+        ],
+        "quotemark": [
+            "single"
+        ],
+        "ordered-imports": [
+            false
+        ],
+        "member-ordering": [
+            false
+        ],
+        "array-type": [
+            true,
+            "array"
+        ],
+        "semicolon": [
+            true,
+            "always"
+        ],
+        "max-classes-per-file": [
+            false
+        ],
+        "member-access": false,
+        "no-reference": false,
+        "no-var-requires": false,
+        "object-literal-sort-keys": false,
+
+        "no-for-in-array": true,
+        "promise-function-async": true,
+        "await-promise": true,
+        "no-void-expression": true,
+        "return-undefined": true,
+        "strict-boolean-expressions": [
+            true,
+            "allow-undefined-union"
+        ]
+    }
+}
