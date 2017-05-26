@@ -432,4 +432,39 @@ describe('field-of-view', () => {
 1..------11
 `);
    });
+    it('gets example 7 right', () => {
+        const fovMap = new WarpField.FieldOfViewMap('A', 11, 11);
+        const fovMap1 = new WarpField.FieldOfViewMap('1', 11, 11);
+        const fovMap2 = new WarpField.FieldOfViewMap('2', 11, 11);
+        const fovMap3 = new WarpField.FieldOfViewMap('3', 11, 11);
+        fovMap.addWarp(5, 4, WarpField.Direction.NORTH, fovMap1, 5, 3);
+        fovMap.addWarp(4, 3, WarpField.Direction.NORTH, fovMap2, 4, 2);
+        fovMap1.addWarp(6, 3, WarpField.Direction.NORTH, fovMap3, 6, 2);
+        fovMap.addWarp(6, 6, WarpField.Direction.EAST, fovMap1, 7, 6);
+        fovMap.addWarp(6, 7, WarpField.Direction.EAST, fovMap1, 7, 7);
+        fovMap.addWarp(7, 6, WarpField.Direction.EAST, fovMap2, 8, 6);
+        fovMap.addWarp(7, 7, WarpField.Direction.EAST, fovMap2, 8, 7);
+        fovMap.addWarp(8, 6, WarpField.Direction.EAST, fovMap3, 9, 6);
+        fovMap.addWarp(8, 7, WarpField.Direction.EAST, fovMap3, 9, 7);
+        fovMap.addWarp(4, 6, WarpField.Direction.WEST, fovMap1, 3, 6);
+        fovMap.addWarp(4, 7, WarpField.Direction.WEST, fovMap1, 3, 7);
+        fovMap1.addWarp(3, 6, WarpField.Direction.WEST, fovMap2, 2, 6);
+        fovMap1.addWarp(3, 7, WarpField.Direction.WEST, fovMap2, 2, 7);
+        fovMap2.addWarp(2, 6, WarpField.Direction.WEST, fovMap3, 1, 6);
+        fovMap2.addWarp(2, 7, WarpField.Direction.WEST, fovMap3, 1, 7);
+        const fov = fovMap.getFieldOfView(5, 5, 5);
+        assert.equal(fov.toString(), `(0,0)
+---2111----
+---2113----
+----11-----
+-----1-----
+-----------
+-----------
+---1---1122
+3321---1111
+3211---1111
+211-----111
+11-------11
+`);
+   });
 });
