@@ -403,4 +403,33 @@ describe('field-of-view', () => {
 46---------
 `);
    });
+    it('gets example 6 right', () => {
+        const fovMap = new WarpField.FieldOfViewMap('A', 11, 11);
+        const fovMap1 = new WarpField.FieldOfViewMap('1', 11, 11);
+        fovMap.addWarp(5, 4, WarpField.Direction.NORTH, fovMap1, 5, 3);
+        fovMap.addWall(4, 3, WarpField.Direction.NORTH);
+        fovMap1.addWall(6, 3, WarpField.Direction.NORTH);
+        fovMap.addWarp(6, 5, WarpField.Direction.EAST, fovMap1, 7, 5);
+        fovMap.addWarp(6, 6, WarpField.Direction.EAST, fovMap1, 7, 6);
+        fovMap.addBody(7, 7);
+        fovMap1.addBody(8, 4);
+        fovMap.addWarp(4, 5, WarpField.Direction.WEST, fovMap1, 3, 5);
+        fovMap.addWarp(4, 6, WarpField.Direction.WEST, fovMap1, 3, 6);
+        fovMap.addWall(4, 4, WarpField.Direction.WEST);
+        fovMap.addWall(4, 6, WarpField.Direction.SOUTH);
+        const fov = fovMap.getFieldOfView(5, 5, 5);
+        assert.equal(fov.toString(), `(0,0)
+---1111----
+.---111----
+..--11-----
+11.--1-----
+1111------1
+1111---1111
+1111---1111
+1111----111
+111.----111
+11..-----11
+1..------11
+`);
+   });
 });

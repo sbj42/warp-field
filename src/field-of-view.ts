@@ -5,6 +5,7 @@ import {
     Wedge,
     WALL_EPSILON,
     BODY_EPSILON,
+    WARP_EPSILON,
     cutWedges,
     warpWedges,
     whichWedge,
@@ -329,7 +330,7 @@ export class FieldOfViewMap {
                         } else if (wallX) {
                             if (typeof warpY !== 'undefined') {
                                 newWedges = warpWedges(newWedges,
-                                    slopeY - WALL_EPSILON, slopeFar + WALL_EPSILON, warpY, nextWarpCount);
+                                    slopeY - WARP_EPSILON, slopeFar + WARP_EPSILON, warpY, nextWarpCount);
                             }
                             if (body) {
                                 newWedges = cutWedges(newWedges,
@@ -348,12 +349,12 @@ export class FieldOfViewMap {
                             }
                             if (typeof warpX !== 'undefined') {
                                 newWedges = warpWedges(newWedges,
-                                    slopeFar - WALL_EPSILON, slopeX + WALL_EPSILON, warpX, nextWarpCount);
+                                    slopeFar - WARP_EPSILON, slopeX + WARP_EPSILON, warpX, nextWarpCount);
                             }
                         } else {
                             if (typeof warpY !== 'undefined') {
                                 newWedges = warpWedges(newWedges,
-                                    slopeY - WALL_EPSILON, slopeFar + WALL_EPSILON, warpY, nextWarpCount);
+                                    slopeY - WARP_EPSILON, slopeFar + WARP_EPSILON, warpY, nextWarpCount);
                             }
                             if (body) {
                                 newWedges = cutWedges(newWedges,
@@ -361,7 +362,7 @@ export class FieldOfViewMap {
                             }
                             if (typeof warpX !== 'undefined') {
                                 newWedges = warpWedges(newWedges,
-                                    slopeFar - WALL_EPSILON, slopeX + WALL_EPSILON, warpX, nextWarpCount);
+                                    slopeFar - WARP_EPSILON, slopeX + WARP_EPSILON, warpX, nextWarpCount);
                             }
                         }
 

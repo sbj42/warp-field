@@ -63,7 +63,14 @@ export const BODY_EPSILON = 0.00001;
  * We must make sure not to widen them as much as we narrow the body shadows,
  * or else they might close the gap we want between a body and a wall.
  */
-export const WALL_EPSILON = BODY_EPSILON / 10;
+export const WALL_EPSILON = BODY_EPSILON / 4;
+
+/**
+ * Warps also fill the entire tile edge.  But we don't extend warps as much as
+ * walls, just in case a sliver of warp might make it past a wall on the other
+ * side of the warp, at the edge of the warp range.
+ */
+export const WARP_EPSILON = WALL_EPSILON / 4;
 
 const DEBUG_CUTWEDGE: boolean = false;
 

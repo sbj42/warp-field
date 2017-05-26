@@ -4,6 +4,8 @@
 
 [See the demo](https://sbj42.github.io/projects/warp-field-demo/www/)
 
+This is an extension to the simpler [WallyFOV](https://github.com/sbj42/warp-field) shadow-casting algorithm.
+
 ## Installation
 
 ~~~
@@ -73,8 +75,10 @@ WarpField works by scanning the four quadrants around the player, tracking the a
 
 In this example image, the shaded tiles are not seen.  Blue lines represent edges of the shadows at various stages of the algorithm.  Dashed lines indicate where a shadow edge is very slightly shifted because it was created by a body.
 
+WarpField also supports warps (a.k.a. portals) from one map to another:
+
 ![Example Image](https://raw.githubusercontent.com/sbj42/warp-field/master/doc/fov-usage-example1.png)
 
-Here is an example of a "staircase" portal scenario.  The red shared areas indicate the "second floor".  There is a portal leading from the first floor to the second.  The player walks around the wall enclosing the staircase, and can see the second floor through the portal.  Passing through the portal, the player looks around the wall again to find a different map.
+This is an example of a "staircase" portal scenario.  The red shared areas indicate the "second floor".  There is a portal leading from the first floor to the second.  The player walks around the wall enclosing the staircase, and can see the second floor through the portal.  Passing through the portal, the player looks around the wall again to find a different map.
 
 For more information, see the [Algorithm Overview](https://github.com/sbj42/warp-field/wiki/Algorithm-Overview).
