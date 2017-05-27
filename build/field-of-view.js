@@ -268,8 +268,8 @@ var FieldOfViewMap = (function () {
                         else {
                             var map = warp.map, offset = warp.offset;
                             LOCAL_OFF.copyFrom(offset).add(startX + dx * xDir, startY + dy * yDir);
-                            wallY = map._getFlag(LOCAL_OFF, fov_util_1.TileFlag.WALL_NORTH);
-                            wallX = map._getFlag(LOCAL_OFF, fov_util_1.TileFlag.WALL_WEST);
+                            wallY = map._getFlag(LOCAL_OFF, farYFlag);
+                            wallX = map._getFlag(LOCAL_OFF, farXFlag);
                             body = (dx !== 0 || dy !== 0) && map._getFlag(LOCAL_OFF, fov_util_1.TileFlag.BODY);
                             warpY = map._getWarp(LOCAL_OFF, yWarpDir);
                             warpX = map._getWarp(LOCAL_OFF, xWarpDir);
@@ -281,7 +281,7 @@ var FieldOfViewMap = (function () {
                         }
                         else if (wallX) {
                             if (typeof warpY !== 'undefined') {
-                                newWedges = fov_util_1.warpWedges(newWedges, slopeY - fov_util_1.WALL_EPSILON, slopeFar + fov_util_1.WALL_EPSILON, warpY, nextWarpCount);
+                                newWedges = fov_util_1.warpWedges(newWedges, slopeY - fov_util_1.WARP_EPSILON, slopeFar + fov_util_1.WARP_EPSILON, warpY, nextWarpCount);
                             }
                             if (body) {
                                 newWedges = fov_util_1.cutWedges(newWedges, slopeY + fov_util_1.BODY_EPSILON, slopeX + fov_util_1.WALL_EPSILON);
@@ -298,18 +298,18 @@ var FieldOfViewMap = (function () {
                                 newWedges = fov_util_1.cutWedges(newWedges, slopeY - fov_util_1.WALL_EPSILON, slopeFar + fov_util_1.WALL_EPSILON);
                             }
                             if (typeof warpX !== 'undefined') {
-                                newWedges = fov_util_1.warpWedges(newWedges, slopeFar - fov_util_1.WALL_EPSILON, slopeX + fov_util_1.WALL_EPSILON, warpX, nextWarpCount);
+                                newWedges = fov_util_1.warpWedges(newWedges, slopeFar - fov_util_1.WARP_EPSILON, slopeX + fov_util_1.WARP_EPSILON, warpX, nextWarpCount);
                             }
                         }
                         else {
                             if (typeof warpY !== 'undefined') {
-                                newWedges = fov_util_1.warpWedges(newWedges, slopeY - fov_util_1.WALL_EPSILON, slopeFar + fov_util_1.WALL_EPSILON, warpY, nextWarpCount);
+                                newWedges = fov_util_1.warpWedges(newWedges, slopeY - fov_util_1.WARP_EPSILON, slopeFar + fov_util_1.WARP_EPSILON, warpY, nextWarpCount);
                             }
                             if (body) {
                                 newWedges = fov_util_1.cutWedges(newWedges, slopeY + fov_util_1.BODY_EPSILON, slopeX - fov_util_1.BODY_EPSILON);
                             }
                             if (typeof warpX !== 'undefined') {
-                                newWedges = fov_util_1.warpWedges(newWedges, slopeFar - fov_util_1.WALL_EPSILON, slopeX + fov_util_1.WALL_EPSILON, warpX, nextWarpCount);
+                                newWedges = fov_util_1.warpWedges(newWedges, slopeFar - fov_util_1.WARP_EPSILON, slopeX + fov_util_1.WARP_EPSILON, warpX, nextWarpCount);
                             }
                         }
                         if (newWedges.length !== 1) {

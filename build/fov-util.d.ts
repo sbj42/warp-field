@@ -45,6 +45,12 @@ export declare const BODY_EPSILON = 0.00001;
  */
 export declare const WALL_EPSILON: number;
 /**
+ * Warps also fill the entire tile edge.  But we don't extend warps as much as
+ * walls, just in case a sliver of warp might make it past a wall on the other
+ * side of the warp, at the edge of the warp range.
+ */
+export declare const WARP_EPSILON: number;
+/**
  * This function cuts a range of angles out of a wedge.
  */
 export declare function cutWedge(wedge: Wedge, low: number, high: number): Wedge[];

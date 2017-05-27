@@ -384,8 +384,8 @@ var FieldOfViewMap = (function () {
                         else {
                             var map = warp.map, offset = warp.offset;
                             LOCAL_OFF.copyFrom(offset).add(startX + dx * xDir, startY + dy * yDir);
-                            wallY = map._getFlag(LOCAL_OFF, fov_util_1.TileFlag.WALL_NORTH);
-                            wallX = map._getFlag(LOCAL_OFF, fov_util_1.TileFlag.WALL_WEST);
+                            wallY = map._getFlag(LOCAL_OFF, farYFlag);
+                            wallX = map._getFlag(LOCAL_OFF, farXFlag);
                             body = (dx !== 0 || dy !== 0) && map._getFlag(LOCAL_OFF, fov_util_1.TileFlag.BODY);
                             warpY = map._getWarp(LOCAL_OFF, yWarpDir);
                             warpX = map._getWarp(LOCAL_OFF, xWarpDir);
@@ -397,7 +397,7 @@ var FieldOfViewMap = (function () {
                         }
                         else if (wallX) {
                             if (typeof warpY !== 'undefined') {
-                                newWedges = fov_util_1.warpWedges(newWedges, slopeY - fov_util_1.WALL_EPSILON, slopeFar + fov_util_1.WALL_EPSILON, warpY, nextWarpCount);
+                                newWedges = fov_util_1.warpWedges(newWedges, slopeY - fov_util_1.WARP_EPSILON, slopeFar + fov_util_1.WARP_EPSILON, warpY, nextWarpCount);
                             }
                             if (body) {
                                 newWedges = fov_util_1.cutWedges(newWedges, slopeY + fov_util_1.BODY_EPSILON, slopeX + fov_util_1.WALL_EPSILON);
@@ -414,18 +414,18 @@ var FieldOfViewMap = (function () {
                                 newWedges = fov_util_1.cutWedges(newWedges, slopeY - fov_util_1.WALL_EPSILON, slopeFar + fov_util_1.WALL_EPSILON);
                             }
                             if (typeof warpX !== 'undefined') {
-                                newWedges = fov_util_1.warpWedges(newWedges, slopeFar - fov_util_1.WALL_EPSILON, slopeX + fov_util_1.WALL_EPSILON, warpX, nextWarpCount);
+                                newWedges = fov_util_1.warpWedges(newWedges, slopeFar - fov_util_1.WARP_EPSILON, slopeX + fov_util_1.WARP_EPSILON, warpX, nextWarpCount);
                             }
                         }
                         else {
                             if (typeof warpY !== 'undefined') {
-                                newWedges = fov_util_1.warpWedges(newWedges, slopeY - fov_util_1.WALL_EPSILON, slopeFar + fov_util_1.WALL_EPSILON, warpY, nextWarpCount);
+                                newWedges = fov_util_1.warpWedges(newWedges, slopeY - fov_util_1.WARP_EPSILON, slopeFar + fov_util_1.WARP_EPSILON, warpY, nextWarpCount);
                             }
                             if (body) {
                                 newWedges = fov_util_1.cutWedges(newWedges, slopeY + fov_util_1.BODY_EPSILON, slopeX - fov_util_1.BODY_EPSILON);
                             }
                             if (typeof warpX !== 'undefined') {
-                                newWedges = fov_util_1.warpWedges(newWedges, slopeFar - fov_util_1.WALL_EPSILON, slopeX + fov_util_1.WALL_EPSILON, warpX, nextWarpCount);
+                                newWedges = fov_util_1.warpWedges(newWedges, slopeFar - fov_util_1.WARP_EPSILON, slopeX + fov_util_1.WARP_EPSILON, warpX, nextWarpCount);
                             }
                         }
                         if (newWedges.length !== 1) {
@@ -637,7 +637,13 @@ exports.BODY_EPSILON = 0.00001;
  * We must make sure not to widen them as much as we narrow the body shadows,
  * or else they might close the gap we want between a body and a wall.
  */
-exports.WALL_EPSILON = exports.BODY_EPSILON / 10;
+exports.WALL_EPSILON = exports.BODY_EPSILON / 4;
+/**
+ * Warps also fill the entire tile edge.  But we don't extend warps as much as
+ * walls, just in case a sliver of warp might make it past a wall on the other
+ * side of the warp, at the edge of the warp range.
+ */
+exports.WARP_EPSILON = exports.WALL_EPSILON / 4;
 var DEBUG_CUTWEDGE = false;
 /**
  * This function cuts a range of angles out of a wedge.
@@ -787,7 +793,7 @@ function whichWedge(wedges, wedgeIndex, centerSlope) {
     // determine the wedge containing centerSlope,
     // or if there isn't one, then the one nearest to centerSlope
     // or if two are very close, the one with the least warp count
-    // or if they both have the same warp count, the one with the lowest warpId
+    // or if they both have the same warp count, the one with the lowest map id
     var cur = wedgeIndex;
     // skip to the next wedge while it starts before before centerSlope
     while (cur < wedges.length - 1 && wedges[cur + 1].low < centerSlope - exports.WALL_EPSILON * 2) {
@@ -1394,4 +1400,4 @@ exports.Size = Size;
 
 /***/ })
 /******/ ]);
-//# sourceMappingURL=warp-field-0.1.0.js.map
+//# sourceMappingURL=warp-field-0.1.1.js.map
