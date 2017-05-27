@@ -170,7 +170,7 @@ export class FieldOfViewMap {
     getWarpFlags(sourceX: number, sourceY: number) {
         LOCAL_OFF.set(sourceX, sourceY);
         let ret = 0;
-        geom.DIRECTIONS.forEach(dir => {
+        geom.DIRECTIONS.forEach((dir) => {
             if (this._getWarp(LOCAL_OFF, dir)) {
                 ret |= 1 << dir;
             }

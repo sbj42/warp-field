@@ -211,7 +211,7 @@ export function whichWedge(wedges: Wedge[], wedgeIndex: number, centerSlope: num
     // determine the wedge containing centerSlope,
     // or if there isn't one, then the one nearest to centerSlope
     // or if two are very close, the one with the least warp count
-    // or if they both have the same warp count, the one with the lowest warpId
+    // or if they both have the same warp count, the one with the lowest map id
     let cur = wedgeIndex;
     // skip to the next wedge while it starts before before centerSlope
     while (cur < wedges.length - 1 && wedges[cur + 1].low < centerSlope - WALL_EPSILON * 2) {
