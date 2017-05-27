@@ -316,8 +316,8 @@ export class FieldOfViewMap {
                         } else {
                             const {map, offset} = warp;
                             LOCAL_OFF.copyFrom(offset).add(startX + dx * xDir, startY + dy * yDir);
-                            wallY = map._getFlag(LOCAL_OFF, TileFlag.WALL_NORTH);
-                            wallX = map._getFlag(LOCAL_OFF, TileFlag.WALL_WEST);
+                            wallY = map._getFlag(LOCAL_OFF, farYFlag);
+                            wallX = map._getFlag(LOCAL_OFF, farXFlag);
                             body = (dx !== 0 || dy !== 0) && map._getFlag(LOCAL_OFF, TileFlag.BODY);
                             warpY = map._getWarp(LOCAL_OFF, yWarpDir);
                             warpX = map._getWarp(LOCAL_OFF, xWarpDir);
