@@ -25,6 +25,13 @@ describe('geom/rectangle', () => {
             assert.equal(o.width, 3);
             assert.equal(o.height, 4);
         });
+        it('works with negative offsets', () => {
+            const o = new geom.Rectangle(-1, -2, 3, 4);
+            assert.equal(o.westX, -1);
+            assert.equal(o.northY, -2);
+            assert.equal(o.width, 3);
+            assert.equal(o.height, 4);
+        });
     });
     describe('#set()', () => {
         it('works', () => {
@@ -65,6 +72,9 @@ describe('geom/rectangle', () => {
             assert.equal(new geom.Rectangle(1, 2, 3, 4).area, 12);
             assert.equal(new geom.Rectangle(1, 2, 4, 3).area, 12);
         });
+        it('works with negative offsets', () => {
+            assert.equal(new geom.Rectangle(-1, -2, 3, 4).area, 12);
+        });
     });
     describe('#copyFrom()', () => {
         it('works', () => {
@@ -96,6 +106,10 @@ describe('geom/rectangle', () => {
             assert.equal(new geom.Rectangle(1, 2, 3, 4).containsOffset({x: 3, y: 6}), false);
             assert.equal(new geom.Rectangle(1, 2, 3, 4).containsOffset({x: 1, y: 0}), false);
             assert.equal(new geom.Rectangle(1, 2, 3, 4).containsOffset({x: 0, y: 3}), false);
+        });
+        it('works with negative offsets', () => {
+            assert.equal(new geom.Rectangle(-1, -2, 3, 4).containsOffset({x: 1, y: 1}), true);
+            assert.equal(new geom.Rectangle(-1, -2, 3, 4).containsOffset({x: 2, y: 1}), false);
         });
     });
     describe('#containsRectangle()', () => {
@@ -145,6 +159,9 @@ describe('geom/rectangle', () => {
             assert.equal(new geom.Rectangle(1, 2, 6, 4).index({x: 4, y: 5}), 21);
             assert.equal(new geom.Rectangle(1, 2, 6, 4).index({x: 6, y: 3}), 11);
             assert.equal(new geom.Rectangle(1, 2, 6, 4).index({x: 1, y: 4}), 12);
+        });
+        it('works with negative offsets', () => {
+            assert.equal(new geom.Rectangle(-1, -2, 6, 4).index({x: 2, y: 1}), 21);
         });
     });
 });

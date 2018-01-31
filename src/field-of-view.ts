@@ -22,7 +22,7 @@ const LOCAL_OFF = new geom.Offset();
 
 /**
  * The FieldOFViewMap represents the map over which the field of view will be
- * computed.  It start out empty.  You can add walls and bodies to it, and then
+ * computed.  It starts out empty.  You can add walls and bodies to it, and then
  * use getFieldOfView() to compute the field of view from a given point.
  */
 export class FieldOfViewMap {
@@ -210,6 +210,9 @@ export class FieldOfViewMap {
                       xDir: number, yDir: number) {
         const {x: startX, y: startY} = origin;
         const endDXY = (chebyshevRadius + 1);
+        if (endDXY < 0 || !this._size.containsOffset(origin)) {
+            return;
+        }
         const farYFlag = [TileFlag.WALL_NORTH, TileFlag.WALL_SOUTH][(yDir + 1) / 2];
         const farXFlag = [TileFlag.WALL_WEST, TileFlag.WALL_EAST][(xDir + 1) / 2];
         const yWarpDir = [geom.Direction.NORTH, geom.Direction.SOUTH][(yDir + 1) / 2];

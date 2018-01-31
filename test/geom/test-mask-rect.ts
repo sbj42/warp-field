@@ -31,6 +31,15 @@ describe('geom/mask-rect', () => {
             assert.equal(o.get({x: 1, y: 2}), false);
             assert.equal(o.get({x: 0, y: 0}), true);
         });
+        it('works with negative offsets', () => {
+            const o = new geom.MaskRect(new geom.Rectangle().set(-1, -2, 3, 4), false, true);
+            assert.equal(o.westX, -1);
+            assert.equal(o.northY, -2);
+            assert.equal(o.width, 3);
+            assert.equal(o.height, 4);
+            assert.equal(o.get({x: -1, y: -2}), false);
+            assert.equal(o.get({x: -2, y: -3}), true);
+        });
     });
     describe('#set()', () => {
         it('works', () => {
