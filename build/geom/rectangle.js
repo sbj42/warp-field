@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 var geom = require(".");
 var LOCAL_OFF = new geom.Offset();
-var Rectangle = (function () {
+var Rectangle = /** @class */ (function () {
     function Rectangle(westX, northY, width, height) {
         if (typeof westX === 'undefined') {
             westX = 0;

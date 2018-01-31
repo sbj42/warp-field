@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-var Size = (function () {
+var Size = /** @class */ (function () {
     function Size(width, height) {
         if (typeof width === 'undefined') {
             width = 0;

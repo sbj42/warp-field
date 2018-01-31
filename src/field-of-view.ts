@@ -66,10 +66,10 @@ export class FieldOfViewMap {
     }
 
     private _findOrMakeWarp(map: FieldOfViewMap, offset: geom.OffsetLike) {
-        for (let id = 0; id < this._warps.length; id ++) {
-            const warp = this._warps[id];
-            if (warp.map === map && warp.offset.equals(offset)) {
-                return id;
+        for (let fid = 0; fid < this._warps.length; fid ++) {
+            const fwarp = this._warps[fid];
+            if (fwarp.map === map && fwarp.offset.equals(offset)) {
+                return fid;
             }
         }
         const warp = {

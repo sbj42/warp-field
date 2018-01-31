@@ -1,6 +1,6 @@
 {
   "name": "warp-field",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "Portal-casting field-of-view algorithm",
   "keywords": [
     "fov",
@@ -16,7 +16,7 @@
   "license": "MIT",
   "scripts": {
     "test": "mocha --reporter min --require ts-node/register test/*.ts test/**/*.ts",
-    "lint": "tslint --project tsconfig.json --type-check",
+    "lint": "tslint --project tsconfig.json",
     "benchmark": "ts-node bench/bench-field-of-view.ts",
     "build": "rimraf bin build && webpack && webpack -p && tsc && rimraf bin/build"
   },

@@ -127,10 +127,10 @@ var _1 = __webpack_require__(1);
 var LOCAL_OFF = new geom.Offset();
 /**
  * The FieldOFViewMap represents the map over which the field of view will be
- * computed.  It start out empty.  You can add walls and bodies to it, and then
+ * computed.  It starts out empty.  You can add walls and bodies to it, and then
  * use getFieldOfView() to compute the field of view from a given point.
  */
-var FieldOfViewMap = (function () {
+var FieldOfViewMap = /** @class */ (function () {
     function FieldOfViewMap(id, width, height, addEdgeWalls) {
         if (addEdgeWalls === void 0) { addEdgeWalls = false; }
         var _this = this;
@@ -164,10 +164,10 @@ var FieldOfViewMap = (function () {
         return (this._tileFlags[index] & flag) !== 0;
     };
     FieldOfViewMap.prototype._findOrMakeWarp = function (map, offset) {
-        for (var id_1 = 0; id_1 < this._warps.length; id_1++) {
-            var warp_1 = this._warps[id_1];
-            if (warp_1.map === map && warp_1.offset.equals(offset)) {
-                return id_1;
+        for (var fid = 0; fid < this._warps.length; fid++) {
+            var fwarp = this._warps[fid];
+            if (fwarp.map === map && fwarp.offset.equals(offset)) {
+                return fid;
             }
         }
         var warp = {
@@ -291,6 +291,9 @@ var FieldOfViewMap = (function () {
     FieldOfViewMap.prototype._quadrant = function (mask, origin, chebyshevRadius, xDir, yDir) {
         var startX = origin.x, startY = origin.y;
         var endDXY = (chebyshevRadius + 1);
+        if (endDXY < 0 || !this._size.containsOffset(origin)) {
+            return;
+        }
         var farYFlag = [fov_util_1.TileFlag.WALL_NORTH, fov_util_1.TileFlag.WALL_SOUTH][(yDir + 1) / 2];
         var farXFlag = [fov_util_1.TileFlag.WALL_WEST, fov_util_1.TileFlag.WALL_EAST][(xDir + 1) / 2];
         var yWarpDir = [geom.Direction.NORTH, geom.Direction.SOUTH][(yDir + 1) / 2];
@@ -453,7 +456,7 @@ exports.FieldOfViewMap = FieldOfViewMap;
 Object.defineProperty(exports, "__esModule", { value: true });
 var geom = __webpack_require__(0);
 var LOCAL_OFF = new geom.Offset();
-var WarpRect = (function () {
+var WarpRect = /** @class */ (function () {
     function WarpRect(rect, initialValue, outsideValue) {
         if (initialValue === void 0) { initialValue = false; }
         if (outsideValue === void 0) { outsideValue = false; }
@@ -931,7 +934,7 @@ exports.directionOpposite = directionOpposite;
 Object.defineProperty(exports, "__esModule", { value: true });
 var geom = __webpack_require__(0);
 var LOCAL_OFF = new geom.Offset();
-var MaskRect = (function () {
+var MaskRect = /** @class */ (function () {
     function MaskRect(rect, initialValue, outsideValue) {
         if (initialValue === void 0) { initialValue = false; }
         if (outsideValue === void 0) { outsideValue = false; }
@@ -1006,7 +1009,7 @@ exports.MaskRect = MaskRect;
 
 Object.defineProperty(exports, "__esModule", { value: true });
 var geom = __webpack_require__(0);
-var Mask = (function () {
+var Mask = /** @class */ (function () {
     // TODO consider Uint8Array for bits
     function Mask(size, initialValue) {
         if (initialValue === void 0) { initialValue = false; }
@@ -1072,7 +1075,7 @@ exports.Mask = Mask;
 Object.defineProperty(exports, "__esModule", { value: true });
 var X_FROM_DIRECTION = [0, 1, 0, -1];
 var Y_FROM_DIRECTION = [-1, 0, 1, 0];
-var Offset = (function () {
+var Offset = /** @class */ (function () {
     function Offset(x, y) {
         if (typeof x === 'undefined') {
             x = 0;
@@ -1180,7 +1183,7 @@ exports.Offset = Offset;
 Object.defineProperty(exports, "__esModule", { value: true });
 var geom = __webpack_require__(0);
 var LOCAL_OFF = new geom.Offset();
-var Rectangle = (function () {
+var Rectangle = /** @class */ (function () {
     function Rectangle(westX, northY, width, height) {
         if (typeof westX === 'undefined') {
             westX = 0;
@@ -1327,7 +1330,7 @@ exports.Rectangle = Rectangle;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var Size = (function () {
+var Size = /** @class */ (function () {
     function Size(width, height) {
         if (typeof width === 'undefined') {
             width = 0;
@@ -1400,4 +1403,4 @@ exports.Size = Size;
 
 /***/ })
 /******/ ]);
-//# sourceMappingURL=warp-field-0.1.1.js.map
+//# sourceMappingURL=warp-field-0.1.3.js.map

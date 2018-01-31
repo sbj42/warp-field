@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var geom = require(".");
-var Mask = (function () {
+var Mask = /** @class */ (function () {
     // TODO consider Uint8Array for bits
     function Mask(size, initialValue) {
         if (initialValue === void 0) { initialValue = false; }

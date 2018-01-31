@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 var geom = require(".");
 var LOCAL_OFF = new geom.Offset();
-var MaskRect = (function () {
+var MaskRect = /** @class */ (function () {
     function MaskRect(rect, initialValue, outsideValue) {
         if (initialValue === void 0) { initialValue = false; }
         if (outsideValue === void 0) { outsideValue = false; }

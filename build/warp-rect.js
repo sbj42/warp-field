@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 var geom = require("./geom");
 var LOCAL_OFF = new geom.Offset();
-var WarpRect = (function () {
+var WarpRect = /** @class */ (function () {
     function WarpRect(rect, initialValue, outsideValue) {
         if (initialValue === void 0) { initialValue = false; }
         if (outsideValue === void 0) { outsideValue = false; }
