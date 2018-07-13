@@ -5,7 +5,7 @@ export declare enum DirectionFlags {
     EAST = 2,
     SOUTH = 4,
     WEST = 8,
-    ALL = 15,
+    ALL = 15
 }
 export declare function directionFlagsToString(flags: DirectionFlags): string;
-export declare function directionFlagsFromDirection(dir: geom.Direction): DirectionFlags;
+export declare function directionFlagsFromDirection(dir: geom.Direction): geom.DirectionFlags;

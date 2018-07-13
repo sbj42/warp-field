@@ -12,13 +12,13 @@ export declare class FieldOfViewMap {
     private readonly _warps;
     private readonly _tileWarpIds;
     constructor(id: string, width: number, height: number, addEdgeWalls?: boolean);
-    private _addFlag(off, flag);
-    private _removeFlag(off, flag);
-    private _getFlag(off, flag);
-    private _findOrMakeWarp(map, offset);
-    private _addWarp(off, dir, warpId);
-    private _removeWarp(off, dir);
-    private _getWarp(off, dir);
+    private _addFlag;
+    private _removeFlag;
+    private _getFlag;
+    private _findOrMakeWarp;
+    private _addWarp;
+    private _removeWarp;
+    private _getWarp;
     /**
      * Adds a wall at a particular edge.  This automatically adds the
      * corresponding wall on the other side.
@@ -46,5 +46,5 @@ export declare class FieldOfViewMap {
      * maskRect.get(x, y) will return true for visible tiles.
      */
     getFieldOfView(x: number, y: number, chebyshevRadius: number): WarpRect;
-    private _quadrant(mask, origin, chebyshevRadius, xDir, yDir);
+    private _quadrant;
 }

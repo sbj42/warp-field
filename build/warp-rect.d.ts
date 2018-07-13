@@ -10,9 +10,9 @@ export declare class WarpRect implements geom.RectangleLike {
     private readonly _mask;
     private readonly _warps;
     constructor(rect: geom.RectangleLike, initialValue?: boolean, outsideValue?: boolean);
-    private _warpsToString();
-    private _getWarpAt(index);
-    private _getWarp(off);
+    private _warpsToString;
+    private _getWarpAt;
+    private _getWarp;
     toString(): string;
     readonly westX: number;
     readonly northY: number;

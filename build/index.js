@@ -1,7 +1,7 @@
 "use strict";
 /*
- *  WallyFOV
- *  github.com/sbj42/WallyFOV
+ *  WarpField
+ *  github.com/sbj42/warp-field
  *  James Clark
  *  Licensed under the MIT license.
  */

@@ -9,7 +9,7 @@ export declare enum TileFlag {
     WALL_EAST = 2,
     WALL_WEST = 8,
     WALL_SOUTH = 4,
-    BODY,
+    BODY
 }
 export interface Warp {
     map: FieldOfViewMap;
