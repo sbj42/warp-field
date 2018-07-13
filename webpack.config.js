@@ -12,6 +12,7 @@ if (minify) {
 
 module.exports = {
     entry: "./src/index.ts",
+    mode: 'production',
     devtool: 'source-map',
     output: {
         path: path.resolve(__dirname, 'bin'),
