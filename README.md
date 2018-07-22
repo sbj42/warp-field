@@ -1,5 +1,9 @@
 # WarpField
 
+[![Dependencies](https://david-dm.org/sbj42/warp-field.svg)](https://david-dm.org/sbj42/warp-field)
+[![CircleCI](https://img.shields.io/circleci/project/github/sbj42/warp-field.svg)](https://circleci.com/gh/sbj42/warp-field)
+[![License](https://img.shields.io/github/license/sbj42/warp-field.svg)](https://github.com/sbj42/warp-field)
+
 #### Portal-casting field-of-view algorithm
 
 [See the demo](https://sbj42.github.io/projects/warp-field-demo/www/)
