@@ -34,15 +34,18 @@ export interface Wedge {
     warpCount: number;
 }
 
+// istanbul ignore next
 function rangeToString(low: number, high: number) {
     return `${low.toFixed(7)}-${high.toFixed(7)}`;
 }
 
+// istanbul ignore next
 function wedgeToString(wedge: Wedge) {
     return `{${rangeToString(wedge.low, wedge.high)}`
         + `${typeof wedge.warp !== 'undefined' ? `~${wedge.warp.map.id}` : ''}}`;
 }
 
+// istanbul ignore next
 function wedgesToString(wedges: Wedge[]) {
     return `[${wedges.map(wedgeToString).join(', ')}]`;
 }
@@ -79,6 +82,7 @@ const DEBUG_CUTWEDGE: boolean = false;
  */
 export function cutWedge(wedge: Wedge, low: number, high: number): Wedge[] {
     if (DEBUG_CUTWEDGE) {
+        // istanbul ignore next
         // tslint:disable-next-line:no-console
         console.info(`cut ${wedgeToString(wedge)} ${rangeToString(low, high)}`);
     }
@@ -116,6 +120,7 @@ export function cutWedge(wedge: Wedge, low: number, high: number): Wedge[] {
         ret = [wedge, nextWedge];
     }
     if (DEBUG_CUTWEDGE) {
+        // istanbul ignore next
         // tslint:disable-next-line:no-console
         console.info(`--> ${wedgesToString(ret)}`);
     }
@@ -134,6 +139,7 @@ const DEBUG_WARPWEDGE: boolean = false;
 
 export function warpWedge(wedge: Wedge, low: number, high: number, warp: Warp, warpCount: number): Wedge[] {
     if (DEBUG_WARPWEDGE) {
+        // istanbul ignore next
         // tslint:disable-next-line:no-console
         console.info(`warp ${wedgeToString(wedge)} ${rangeToString(low, high)} ${warp.map.id}`);
     }
@@ -193,6 +199,7 @@ export function warpWedge(wedge: Wedge, low: number, high: number, warp: Warp, w
         ret = [wedge, middleWedge, highWedge];
     }
     if (DEBUG_WARPWEDGE) {
+        // istanbul ignore next
         // tslint:disable-next-line:no-console
         console.info(`--> ${wedgesToString(ret)}`);
     }
