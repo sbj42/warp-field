@@ -9,6 +9,8 @@ describe('geom/rectangle', () => {
         assert.equal(o.northY, 0);
         assert.equal(o.width, 0);
         assert.equal(o.height, 0);
+        assert.equal(o.eastX, -1);
+        assert.equal(o.southY, -1);
     });
     it('is mutable', () => {
         const o = new geom.Rectangle();
@@ -24,6 +26,8 @@ describe('geom/rectangle', () => {
             assert.equal(o.northY, 2);
             assert.equal(o.width, 3);
             assert.equal(o.height, 4);
+            assert.equal(o.eastX, 3);
+            assert.equal(o.southY, 5);
         });
         it('works with negative offsets', () => {
             const o = new geom.Rectangle(-1, -2, 3, 4);
@@ -31,6 +35,8 @@ describe('geom/rectangle', () => {
             assert.equal(o.northY, -2);
             assert.equal(o.width, 3);
             assert.equal(o.height, 4);
+            assert.equal(o.eastX, 1);
+            assert.equal(o.southY, 1);
         });
     });
     describe('#set()', () => {
