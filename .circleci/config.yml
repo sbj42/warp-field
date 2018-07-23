@@ -30,13 +30,21 @@ jobs:
           key: v1-dependencies-{{ checksum "package.json" }}
         
       - run:
-          name: lint
-          command: npm run lint
-        
-      - run:
           name: test
-          command: npm run test
+          command: npm run test -- --ci --runInBand --testResultsProcessor="jest-junit"
+          environment:
+            JEST_JUNIT_OUTPUT: "reports/junit/js-test-results.xml"
+
+      - run:
+          name: lint
+          command: npm run lint -- --format junit --out reports/junit/js-lint-results.xml
         
+      - store_test_results:
+          path: reports/junit
+
+      - store_artifacts:
+          path: reports/junit
+         
       - run:
           name: build
           command: npm run build
