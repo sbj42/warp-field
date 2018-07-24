@@ -112,6 +112,9 @@ var FieldOfViewMap = /** @class */ (function () {
         var index = this._size.index(LOCAL_OFF);
         return this._tileFlags[index] & geom.DirectionFlags.ALL;
     };
+    FieldOfViewMap.prototype.getWall = function (x, y, dir) {
+        return (this.getWalls(x, y) & (1 << dir)) !== 0;
+    };
     FieldOfViewMap.prototype.addBody = function (x, y) {
         LOCAL_OFF.set(x, y);
         this._addFlag(LOCAL_OFF, fov_util_1.TileFlag.BODY);
@@ -123,7 +126,7 @@ var FieldOfViewMap = /** @class */ (function () {
     FieldOfViewMap.prototype.getBody = function (x, y) {
         LOCAL_OFF.set(x, y);
         var index = this._size.index(LOCAL_OFF);
-        return this._tileFlags[index] & fov_util_1.TileFlag.BODY;
+        return (this._tileFlags[index] & fov_util_1.TileFlag.BODY) !== 0;
     };
     // TODO add length argument
     FieldOfViewMap.prototype.addWarp = function (sourceX, sourceY, dir, targetMap, targetX, targetY) {
@@ -149,6 +152,10 @@ var FieldOfViewMap = /** @class */ (function () {
         });
         return ret;
     };
+    FieldOfViewMap.prototype.getWarpFlag = function (sourceX, sourceY, dir) {
+        LOCAL_OFF.set(sourceX, sourceY);
+        return this._getWarp(LOCAL_OFF, dir) != null;
+    };
     // execution
     /**
      * Compute the field of view for a camera at the given tile.
@@ -156,8 +163,11 @@ var FieldOfViewMap = /** @class */ (function () {
      * (https://en.wikipedia.org/wiki/Chebyshev_distance), which just means
      * that the limit of vision in a large empty field will be square.
      *
-     * This returns a MaskRect, which indicates which tiles are visible.
-     * maskRect.get(x, y) will return true for visible tiles.
+     * This returns a WarpRect, which indicates which tiles are visible
+     * and which map is seen in each tile.  warpRect.getMask(x, y) will return
+     * true for visible tiles, warpRect.getMap(x, y) will return
+     * the map for that tile, and warpRect.getOffset(x, y) will return the
+     * location in that map which is visible there.
      */
     FieldOfViewMap.prototype.getFieldOfView = function (x, y, chebyshevRadius) {
         var origin = new geom.Offset(x, y);

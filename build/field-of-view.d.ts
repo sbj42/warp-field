@@ -30,20 +30,25 @@ export declare class FieldOfViewMap {
      */
     removeWall(x: number, y: number, dir: geom.Direction, oneWay?: boolean): void;
     getWalls(x: number, y: number): number;
+    getWall(x: number, y: number, dir: geom.Direction): boolean;
     addBody(x: number, y: number): void;
     removeBody(x: number, y: number): void;
-    getBody(x: number, y: number): number;
+    getBody(x: number, y: number): boolean;
     addWarp(sourceX: number, sourceY: number, dir: geom.Direction, targetMap: FieldOfViewMap, targetX: number, targetY: number): void;
     removeWarp(sourceX: number, sourceY: number, dir: geom.Direction): void;
     getWarpFlags(sourceX: number, sourceY: number): number;
+    getWarpFlag(sourceX: number, sourceY: number, dir: geom.Direction): boolean;
     /**
      * Compute the field of view for a camera at the given tile.
      * chebyshevRadius is the vision radius.  It uses chebyshev distance
      * (https://en.wikipedia.org/wiki/Chebyshev_distance), which just means
      * that the limit of vision in a large empty field will be square.
      *
-     * This returns a MaskRect, which indicates which tiles are visible.
-     * maskRect.get(x, y) will return true for visible tiles.
+     * This returns a WarpRect, which indicates which tiles are visible
+     * and which map is seen in each tile.  warpRect.getMask(x, y) will return
+     * true for visible tiles, warpRect.getMap(x, y) will return
+     * the map for that tile, and warpRect.getOffset(x, y) will return the
+     * location in that map which is visible there.
      */
     getFieldOfView(x: number, y: number, chebyshevRadius: number): WarpRect;
     private _quadrant;

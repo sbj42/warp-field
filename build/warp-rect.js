@@ -3,9 +3,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var geom = require("./geom");
 var LOCAL_OFF = new geom.Offset();
 var WarpRect = /** @class */ (function () {
-    function WarpRect(rect, initialValue, outsideValue) {
+    function WarpRect(rect, initialValue) {
         if (initialValue === void 0) { initialValue = false; }
-        if (outsideValue === void 0) { outsideValue = false; }
         this._rectangle = new geom.Rectangle();
         this._rectangle.copyFrom(rect);
         this._mask = new geom.Mask(rect, initialValue);
@@ -86,7 +85,7 @@ var WarpRect = /** @class */ (function () {
         }
         return this._mask.getAt(this._rectangle.index(LOCAL_OFF));
     };
-    WarpRect.prototype.getMapIdAt = function (index) {
+    WarpRect.prototype.getMapAt = function (index) {
         var warp = this._getWarpAt(index);
         if (warp) {
             return warp.map;

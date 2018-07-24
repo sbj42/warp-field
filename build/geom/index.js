@@ -9,5 +9,4 @@ __export(require("./offset"));
 __export(require("./size"));
 __export(require("./rectangle"));
 __export(require("./mask"));
-__export(require("./mask-rect"));
 //# sourceMappingURL=index.js.map

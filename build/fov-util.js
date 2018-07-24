@@ -14,13 +14,16 @@ var TileFlag;
     TileFlag[TileFlag["WALL_SOUTH"] = 4] = "WALL_SOUTH";
     TileFlag[TileFlag["BODY"] = 1 << geom.DIRECTIONS.length] = "BODY";
 })(TileFlag = exports.TileFlag || (exports.TileFlag = {}));
+// istanbul ignore next
 function rangeToString(low, high) {
     return low.toFixed(7) + "-" + high.toFixed(7);
 }
+// istanbul ignore next
 function wedgeToString(wedge) {
     return "{" + rangeToString(wedge.low, wedge.high)
         + ((typeof wedge.warp !== 'undefined' ? "~" + wedge.warp.map.id : '') + "}");
 }
+// istanbul ignore next
 function wedgesToString(wedges) {
     return "[" + wedges.map(wedgeToString).join(', ') + "]";
 }
@@ -52,6 +55,7 @@ var DEBUG_CUTWEDGE = false;
  */
 function cutWedge(wedge, low, high) {
     if (DEBUG_CUTWEDGE) {
+        // istanbul ignore next
         // tslint:disable-next-line:no-console
         console.info("cut " + wedgeToString(wedge) + " " + rangeToString(low, high));
     }
@@ -94,6 +98,7 @@ function cutWedge(wedge, low, high) {
         ret = [wedge, nextWedge];
     }
     if (DEBUG_CUTWEDGE) {
+        // istanbul ignore next
         // tslint:disable-next-line:no-console
         console.info("--> " + wedgesToString(ret));
     }
@@ -112,6 +117,7 @@ exports.cutWedges = cutWedges;
 var DEBUG_WARPWEDGE = false;
 function warpWedge(wedge, low, high, warp, warpCount) {
     if (DEBUG_WARPWEDGE) {
+        // istanbul ignore next
         // tslint:disable-next-line:no-console
         console.info("warp " + wedgeToString(wedge) + " " + rangeToString(low, high) + " " + warp.map.id);
     }
@@ -176,6 +182,7 @@ function warpWedge(wedge, low, high, warp, warpCount) {
         ret = [wedge, middleWedge, highWedge];
     }
     if (DEBUG_WARPWEDGE) {
+        // istanbul ignore next
         // tslint:disable-next-line:no-console
         console.info("--> " + wedgesToString(ret));
     }
