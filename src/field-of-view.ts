@@ -195,8 +195,11 @@ export class FieldOfViewMap {
      * (https://en.wikipedia.org/wiki/Chebyshev_distance), which just means
      * that the limit of vision in a large empty field will be square.
      *
-     * This returns a MaskRect, which indicates which tiles are visible.
-     * maskRect.get(x, y) will return true for visible tiles.
+     * This returns a WarpRect, which indicates which tiles are visible
+     * and which map is seen in each tile.  warpRect.getMask(x, y) will return
+     * true for visible tiles, warpRect.getMap(x, y) will return
+     * the map for that tile, and warpRect.getOffset(x, y) will return the
+     * location in that map which is visible there.
      */
     getFieldOfView(x: number, y: number, chebyshevRadius: number) {
         const origin = new geom.Offset(x, y);

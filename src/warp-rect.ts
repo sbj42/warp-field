@@ -15,7 +15,7 @@ export class WarpRect implements geom.RectangleLike {
     private readonly _mask: geom.Mask;
     private readonly _warps: Warp[];
 
-    constructor(rect: geom.RectangleLike, initialValue = false, outsideValue = false) {
+    constructor(rect: geom.RectangleLike, initialValue = false) {
         this._rectangle.copyFrom(rect);
         this._mask = new geom.Mask(rect, initialValue);
         this._warps = new Array<Warp>(this._rectangle.area);
@@ -90,7 +90,7 @@ export class WarpRect implements geom.RectangleLike {
         return this._mask.getAt(this._rectangle.index(LOCAL_OFF));
     }
 
-    getMapIdAt(index: number) {
+    getMapAt(index: number) {
         const warp = this._getWarpAt(index);
         if (warp) {
             return warp.map;
@@ -130,13 +130,13 @@ export class WarpRect implements geom.RectangleLike {
 
     // mutators
 
-    setAt(index: number, value: boolean, warp: Warp) {
+    setAt(index: number, value: boolean, warp: Warp | undefined) {
         this._mask.setAt(index, value);
         this._warps[index] = warp;
         return this;
     }
 
-    set(off: geom.OffsetLike, value: boolean, warp: Warp) {
+    set(off: geom.OffsetLike, value: boolean, warp: Warp | undefined) {
         this._mask.setAt(this._rectangle.index(off), value);
         this._warps[this._rectangle.index(off)] = warp;
         return this;
