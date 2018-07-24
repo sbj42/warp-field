@@ -4,13 +4,6 @@ import * as WarpField from '../src';
 import * as geom from '../src/geom';
 
 describe('field-of-view', () => {
-    it('can remove edge walls', () => {
-        const fovMap = new WarpField.FieldOfViewMap('A', 4, 4, true);
-        fovMap.removeWall(0, 0, geom.Direction.NORTH);
-        fovMap.removeWall(0, 1, geom.Direction.WEST);
-        fovMap.removeWall(3, 2, geom.Direction.EAST);
-        fovMap.removeWall(2, 3, geom.Direction.SOUTH);
-    });
     it('works in middle of empty field', () => {
         const fovMap = new WarpField.FieldOfViewMap('A', 7, 7);
         const fov = fovMap.getFieldOfView(3, 3, 2);
@@ -66,6 +59,49 @@ describe('field-of-view', () => {
 .....
 `);
     });
+    it('can add and remove walls', () => {
+        const fovMap = new WarpField.FieldOfViewMap('A', 4, 4);
+        fovMap.addWall(1, 1, geom.Direction.NORTH);
+        fovMap.addWall(1, 2, geom.Direction.WEST);
+        fovMap.addWall(2, 1, geom.Direction.EAST);
+        fovMap.addWall(2, 2, geom.Direction.SOUTH);
+        assert.equal(fovMap.getWall(1, 1, geom.Direction.NORTH), true);
+        assert.equal(fovMap.getWall(1, 0, geom.Direction.SOUTH), true);
+        assert.equal(fovMap.getWall(1, 2, geom.Direction.WEST), true);
+        assert.equal(fovMap.getWall(0, 2, geom.Direction.EAST), true);
+        assert.equal(fovMap.getWall(2, 1, geom.Direction.EAST), true);
+        assert.equal(fovMap.getWall(3, 1, geom.Direction.WEST), true);
+        assert.equal(fovMap.getWall(2, 2, geom.Direction.SOUTH), true);
+        assert.equal(fovMap.getWall(2, 3, geom.Direction.NORTH), true);
+        fovMap.removeWall(1, 1, geom.Direction.NORTH);
+        fovMap.removeWall(1, 2, geom.Direction.WEST);
+        fovMap.removeWall(2, 1, geom.Direction.EAST);
+        fovMap.removeWall(2, 2, geom.Direction.SOUTH);
+        assert.equal(fovMap.getWall(1, 1, geom.Direction.NORTH), false);
+        assert.equal(fovMap.getWall(1, 0, geom.Direction.SOUTH), false);
+        assert.equal(fovMap.getWall(1, 2, geom.Direction.WEST), false);
+        assert.equal(fovMap.getWall(0, 2, geom.Direction.EAST), false);
+        assert.equal(fovMap.getWall(2, 1, geom.Direction.EAST), false);
+        assert.equal(fovMap.getWall(3, 1, geom.Direction.WEST), false);
+        assert.equal(fovMap.getWall(2, 2, geom.Direction.SOUTH), false);
+        assert.equal(fovMap.getWall(2, 3, geom.Direction.NORTH), false);
+    });
+    it('can add and remove one-way walls', () => {
+        const fovMap = new WarpField.FieldOfViewMap('A', 4, 4);
+        assert.equal(fovMap.getWall(1, 1, geom.Direction.NORTH), false);
+        fovMap.addWall(1, 1, geom.Direction.NORTH, true);
+        assert.equal(fovMap.getWall(1, 1, geom.Direction.NORTH), true);
+        assert.equal(fovMap.getWall(1, 0, geom.Direction.SOUTH), false);
+        fovMap.removeWall(1, 1, geom.Direction.NORTH, true);
+        assert.equal(fovMap.getWall(1, 1, geom.Direction.NORTH), false);
+    });
+    it('can remove edge walls', () => {
+        const fovMap = new WarpField.FieldOfViewMap('A', 4, 4, true);
+        fovMap.removeWall(0, 0, geom.Direction.NORTH);
+        fovMap.removeWall(0, 1, geom.Direction.WEST);
+        fovMap.removeWall(3, 2, geom.Direction.EAST);
+        fovMap.removeWall(2, 3, geom.Direction.SOUTH);
+    });
     it('works for a simple square walled-off room', () => {
         const fovMap = new WarpField.FieldOfViewMap('A', 7, 7);
         fovMap.addWall(2, 2, geom.Direction.NORTH);
@@ -88,6 +124,19 @@ describe('field-of-view', () => {
 .---.
 .....
 `);
+    });
+    it('can add and remove bodies', () => {
+        const fovMap = new WarpField.FieldOfViewMap('A', 4, 4);
+        assert.equal(fovMap.getBody(2, 1), false);
+        assert.equal(fovMap.getBody(0, 3), false);
+        fovMap.addBody(2, 1);
+        fovMap.addBody(0, 3);
+        assert.equal(fovMap.getBody(2, 1), true);
+        assert.equal(fovMap.getBody(0, 3), true);
+        fovMap.removeBody(2, 1);
+        fovMap.removeBody(0, 3);
+        assert.equal(fovMap.getBody(2, 1), false);
+        assert.equal(fovMap.getBody(0, 3), false);
     });
     it('works for a simple square blocked-in room', () => {
         const fovMap = new WarpField.FieldOfViewMap('A', 7, 7);
@@ -243,12 +292,30 @@ describe('field-of-view', () => {
         const fovMap1 = new WarpField.FieldOfViewMap('A', 5, 5);
         const fovMap2 = new WarpField.FieldOfViewMap('B', 5, 5);
         fovMap1.addWarp(2, 2, geom.Direction.EAST, fovMap2, 3, 2);
+        assert.equal(fovMap1.getWarpFlags(2, 2), geom.directionFlagsFromDirection(geom.Direction.EAST));
+        assert.equal(fovMap1.getWarpFlag(2, 2, geom.Direction.EAST), true);
         const fov = fovMap1.getFieldOfView(2, 2, 2);
         assert.equal(fov.toString(), `(0,0)
 -----
 ----B
 ---BB
 ----B
+-----
+`);
+    });
+    it('can remove a warp', () => {
+        const fovMap1 = new WarpField.FieldOfViewMap('A', 5, 5);
+        const fovMap2 = new WarpField.FieldOfViewMap('B', 5, 5);
+        fovMap1.addWarp(2, 2, geom.Direction.EAST, fovMap2, 3, 2);
+        assert.equal(fovMap1.getWarpFlag(2, 2, geom.Direction.EAST), true);
+        fovMap1.removeWarp(2, 2, geom.Direction.EAST);
+        assert.equal(fovMap1.getWarpFlag(2, 2, geom.Direction.EAST), false);
+        const fov = fovMap1.getFieldOfView(2, 2, 2);
+        assert.equal(fov.toString(), `(0,0)
+-----
+-----
+-----
+-----
 -----
 `);
     });
@@ -638,4 +705,18 @@ describe('field-of-view', () => {
 .....
 `);
    });
+    it('covers wallX/warpY case', () => {
+        const fovMap1 = new WarpField.FieldOfViewMap('A', 5, 5);
+        const fovMap2 = new WarpField.FieldOfViewMap('B', 5, 5);
+        fovMap1.addWall(3, 3, geom.Direction.EAST);
+        fovMap1.addWarp(3, 3, geom.Direction.SOUTH, fovMap2, 2, 1);
+        const fov = fovMap1.getFieldOfView(2, 2, 2);
+        assert.equal(fov.toString(), `(0,0)
+-----
+-----
+-----
+-----
+---BB
+`);
+    });
 });

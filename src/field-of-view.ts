@@ -135,6 +135,10 @@ export class FieldOfViewMap {
         return this._tileFlags[index] & geom.DirectionFlags.ALL;
     }
 
+    getWall(x: number, y: number, dir: geom.Direction) {
+        return (this.getWalls(x, y) & (1 << dir)) !== 0;
+    }
+
     addBody(x: number, y: number) {
         LOCAL_OFF.set(x, y);
         this._addFlag(LOCAL_OFF, TileFlag.BODY);
@@ -148,7 +152,7 @@ export class FieldOfViewMap {
     getBody(x: number, y: number) {
         LOCAL_OFF.set(x, y);
         const index = this._size.index(LOCAL_OFF);
-        return this._tileFlags[index] & TileFlag.BODY;
+        return (this._tileFlags[index] & TileFlag.BODY) !== 0;
     }
 
     // TODO add length argument
@@ -176,6 +180,11 @@ export class FieldOfViewMap {
             }
         });
         return ret;
+    }
+
+    getWarpFlag(sourceX: number, sourceY: number, dir: geom.Direction) {
+        LOCAL_OFF.set(sourceX, sourceY);
+        return this._getWarp(LOCAL_OFF, dir) != null;
     }
 
     // execution
