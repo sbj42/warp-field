@@ -81,8 +81,8 @@ const DEBUG_CUTWEDGE: boolean = false;
  * This function cuts a range of angles out of a wedge.
  */
 export function cutWedge(wedge: Wedge, low: number, high: number): Wedge[] {
+    // istanbul ignore next
     if (DEBUG_CUTWEDGE) {
-        // istanbul ignore next
         // tslint:disable-next-line:no-console
         console.info(`cut ${wedgeToString(wedge)} ${rangeToString(low, high)}`);
     }
@@ -119,8 +119,8 @@ export function cutWedge(wedge: Wedge, low: number, high: number): Wedge[] {
         wedge.high = low;
         ret = [wedge, nextWedge];
     }
+    // istanbul ignore next
     if (DEBUG_CUTWEDGE) {
-        // istanbul ignore next
         // tslint:disable-next-line:no-console
         console.info(`--> ${wedgesToString(ret)}`);
     }
@@ -138,8 +138,8 @@ export function cutWedges(wedges: Wedge[], low: number, high: number): Wedge[] {
 const DEBUG_WARPWEDGE: boolean = false;
 
 export function warpWedge(wedge: Wedge, low: number, high: number, warp: Warp, warpCount: number): Wedge[] {
+    // istanbul ignore next
     if (DEBUG_WARPWEDGE) {
-        // istanbul ignore next
         // tslint:disable-next-line:no-console
         console.info(`warp ${wedgeToString(wedge)} ${rangeToString(low, high)} ${warp.map.id}`);
     }
@@ -198,8 +198,8 @@ export function warpWedge(wedge: Wedge, low: number, high: number, warp: Warp, w
         wedge.high = low;
         ret = [wedge, middleWedge, highWedge];
     }
+    // istanbul ignore next
     if (DEBUG_WARPWEDGE) {
-        // istanbul ignore next
         // tslint:disable-next-line:no-console
         console.info(`--> ${wedgesToString(ret)}`);
     }
