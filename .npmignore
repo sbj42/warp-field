@@ -4,7 +4,7 @@ npm-debug.log*
 /local
 /coverage
 /.circleci
-/img
+/doc
 /benchmark
 /bin
 /test
