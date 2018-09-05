@@ -54,8 +54,8 @@ var DEBUG_CUTWEDGE = false;
  * This function cuts a range of angles out of a wedge.
  */
 function cutWedge(wedge, low, high) {
+    // istanbul ignore next
     if (DEBUG_CUTWEDGE) {
-        // istanbul ignore next
         // tslint:disable-next-line:no-console
         console.info("cut " + wedgeToString(wedge) + " " + rangeToString(low, high));
     }
@@ -97,8 +97,8 @@ function cutWedge(wedge, low, high) {
         wedge.high = low;
         ret = [wedge, nextWedge];
     }
+    // istanbul ignore next
     if (DEBUG_CUTWEDGE) {
-        // istanbul ignore next
         // tslint:disable-next-line:no-console
         console.info("--> " + wedgesToString(ret));
     }
@@ -116,8 +116,8 @@ function cutWedges(wedges, low, high) {
 exports.cutWedges = cutWedges;
 var DEBUG_WARPWEDGE = false;
 function warpWedge(wedge, low, high, warp, warpCount) {
+    // istanbul ignore next
     if (DEBUG_WARPWEDGE) {
-        // istanbul ignore next
         // tslint:disable-next-line:no-console
         console.info("warp " + wedgeToString(wedge) + " " + rangeToString(low, high) + " " + warp.map.id);
     }
@@ -181,8 +181,8 @@ function warpWedge(wedge, low, high, warp, warpCount) {
         wedge.high = low;
         ret = [wedge, middleWedge, highWedge];
     }
+    // istanbul ignore next
     if (DEBUG_WARPWEDGE) {
-        // istanbul ignore next
         // tslint:disable-next-line:no-console
         console.info("--> " + wedgesToString(ret));
     }

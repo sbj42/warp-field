@@ -1,10 +1,10 @@
 var path = require('path');
 var config = require('./package.json');
 
-var minify = process.argv.indexOf('-p') !== -1;
+var production = process.argv.indexOf('-p') !== -1;
 
 var filename = 'warp-field-' + config.version
-if (minify) {
+if (production) {
     filename += '.min.js';
 } else {
     filename += '.js';
@@ -12,7 +12,7 @@ if (minify) {
 
 module.exports = {
     entry: "./src/index.ts",
-    mode: 'production',
+    mode: production ? 'production' : 'development',
     devtool: 'source-map',
     output: {
         path: path.resolve(__dirname, 'bin'),
