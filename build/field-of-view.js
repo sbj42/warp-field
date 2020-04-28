@@ -1,4 +1,11 @@
 "use strict";
+var __spreadArrays = (this && this.__spreadArrays) || function () {
+    for (var s = 0, i = 0, il = arguments.length; i < il; i++) s += arguments[i].length;
+    for (var r = Array(s), k = 0, i = 0; i < il; i++)
+        for (var a = arguments[i], j = 0, jl = a.length; j < jl; j++, k++)
+            r[k] = a[j];
+    return r;
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 var geom = require("./geom");
 var fov_util_1 = require("./fov-util");
@@ -16,8 +23,8 @@ var LOCAL_OFF = new geom.Offset();
  */
 var FieldOfViewMap = /** @class */ (function () {
     function FieldOfViewMap(id, width, height, addEdgeWalls) {
-        if (addEdgeWalls === void 0) { addEdgeWalls = false; }
         var _this = this;
+        if (addEdgeWalls === void 0) { addEdgeWalls = false; }
         this._size = new geom.Size();
         this._warps = new Array();
         this.id = id;
@@ -326,7 +333,7 @@ var FieldOfViewMap = /** @class */ (function () {
                             }
                         }
                         if (newWedges.length !== 1) {
-                            wedges.splice.apply(wedges, [wedgeIndexInner, 1].concat(newWedges));
+                            wedges.splice.apply(wedges, __spreadArrays([wedgeIndexInner, 1], newWedges));
                         }
                         // X += Y must be written as X = X + Y, in order not to trigger deoptimization due to
                         // http://stackoverflow.com/questions/34595356/what-does-compound-let-const-assignment-mean

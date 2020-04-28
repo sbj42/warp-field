@@ -10,8 +10,8 @@ export declare class Size implements SizeLike {
     constructor(width: number, height: number);
     toString(): string;
     equals(other: SizeLike): boolean;
-    readonly empty: boolean;
-    readonly area: number;
+    get empty(): boolean;
+    get area(): number;
     set(width: number, height: number): this;
     copyFrom(other: SizeLike): this;
     add(width: number, height: number): this;

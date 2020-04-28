@@ -10,8 +10,8 @@ export declare class Offset implements OffsetLike {
     constructor(x: number, y: number);
     toString(): string;
     equals(other: OffsetLike): boolean;
-    readonly magnitudeChebyshev: number;
-    readonly magnitudeManhattan: number;
+    get magnitudeChebyshev(): number;
+    get magnitudeManhattan(): number;
     set(x: number, y: number): this;
     copyFrom(other: OffsetLike): this;
     setFromDirection(dir: geom.Direction): this;

@@ -4,8 +4,8 @@ export declare class Mask implements geom.SizeLike {
     private readonly _bits;
     constructor(size: geom.SizeLike, initialValue?: boolean);
     toString(): string;
-    readonly width: number;
-    readonly height: number;
+    get width(): number;
+    get height(): number;
     index(off: geom.OffsetLike): number;
     getAt(index: number): boolean;
     get(off: geom.OffsetLike): boolean;

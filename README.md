@@ -1,9 +1,8 @@
 # WarpField
 
 [![Dependencies](https://david-dm.org/sbj42/warp-field.svg)](https://david-dm.org/sbj42/warp-field)
-[![CircleCI](https://img.shields.io/circleci/project/github/sbj42/warp-field.svg)](https://circleci.com/gh/sbj42/warp-field)
+[![Node.js CI](https://github.com/sbj42/warp-field/workflows/Node.js%20CI/badge.svg)](https://github.com/sbj42/warp-field/actions?query=workflow%3A%22Node.js+CI%22)
 [![License](https://img.shields.io/github/license/sbj42/warp-field.svg)](https://github.com/sbj42/warp-field)
-[![Coverage](https://coveralls.io/repos/github/sbj42/warp-field/badge.svg?branch=master)](https://coveralls.io/github/sbj42/warp-field?branch=master)
 
 #### Portal-casting field-of-view algorithm
 
