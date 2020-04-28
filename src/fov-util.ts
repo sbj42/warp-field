@@ -75,7 +75,7 @@ export const WALL_EPSILON = BODY_EPSILON / 4;
  */
 export const WARP_EPSILON = WALL_EPSILON / 4;
 
-const DEBUG_CUTWEDGE: boolean = false;
+const DEBUG_CUTWEDGE = false;
 
 /**
  * This function cuts a range of angles out of a wedge.
@@ -135,7 +135,7 @@ export function cutWedges(wedges: Wedge[], low: number, high: number): Wedge[] {
     return ret;
 }
 
-const DEBUG_WARPWEDGE: boolean = false;
+const DEBUG_WARPWEDGE = false;
 
 export function warpWedge(wedge: Wedge, low: number, high: number, warp: Warp, warpCount: number): Wedge[] {
     // istanbul ignore next
