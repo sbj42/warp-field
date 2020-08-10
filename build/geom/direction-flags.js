@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.directionFlagsFromDirection = exports.directionFlagsToString = exports.DirectionFlags = void 0;
 // tslint:disable:no-bitwise
 var DirectionFlags;
 (function (DirectionFlags) {

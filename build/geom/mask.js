@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.Mask = void 0;
 var geom = require(".");
 var Mask = /** @class */ (function () {
     // TODO consider Uint8Array for bits
@@ -26,14 +27,14 @@ var Mask = /** @class */ (function () {
         get: function () {
             return this._size.width;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     Object.defineProperty(Mask.prototype, "height", {
         get: function () {
             return this._size.height;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     Mask.prototype.index = function (off) {

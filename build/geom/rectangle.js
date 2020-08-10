@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.Rectangle = void 0;
 var geom = require(".");
 var LOCAL_OFF = new geom.Offset();
 var Rectangle = /** @class */ (function () {
@@ -30,56 +31,56 @@ var Rectangle = /** @class */ (function () {
         get: function () {
             return this.northWest.y;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     Object.defineProperty(Rectangle.prototype, "southY", {
         get: function () {
             return this.northWest.y + this.size.height - 1;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     Object.defineProperty(Rectangle.prototype, "westX", {
         get: function () {
             return this.northWest.x;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     Object.defineProperty(Rectangle.prototype, "eastX", {
         get: function () {
             return this.northWest.x + this.size.width - 1;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     Object.defineProperty(Rectangle.prototype, "width", {
         get: function () {
             return this.size.width;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     Object.defineProperty(Rectangle.prototype, "height", {
         get: function () {
             return this.size.height;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     Object.defineProperty(Rectangle.prototype, "empty", {
         get: function () {
             return this.size.empty;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     Object.defineProperty(Rectangle.prototype, "area", {
         get: function () {
             return this.size.area;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     // mutators

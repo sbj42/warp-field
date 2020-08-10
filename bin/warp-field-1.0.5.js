@@ -104,6 +104,7 @@ var __spreadArrays = (this && this.__spreadArrays) || function () {
     return r;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.FieldOfViewMap = void 0;
 var geom = __webpack_require__(/*! ./geom */ "./src/geom/index.ts");
 var fov_util_1 = __webpack_require__(/*! ./fov-util */ "./src/fov-util.ts");
 var _1 = __webpack_require__(/*! . */ "./src/index.ts");
@@ -457,6 +458,7 @@ exports.FieldOfViewMap = FieldOfViewMap;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.whichWedge = exports.warpWedges = exports.warpWedge = exports.cutWedges = exports.cutWedge = exports.WARP_EPSILON = exports.WALL_EPSILON = exports.BODY_EPSILON = exports.TileFlag = void 0;
 var geom = __webpack_require__(/*! ./geom */ "./src/geom/index.ts");
 // tslint:disable:no-bitwise
 /**
@@ -722,6 +724,7 @@ exports.whichWedge = whichWedge;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.directionFlagsFromDirection = exports.directionFlagsToString = exports.DirectionFlags = void 0;
 // tslint:disable:no-bitwise
 var DirectionFlags;
 (function (DirectionFlags) {
@@ -769,6 +772,7 @@ exports.directionFlagsFromDirection = directionFlagsFromDirection;
 
 // tslint:disable:no-bitwise
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.directionOpposite = exports.directionToString = exports.DIRECTIONS = exports.Direction = void 0;
 var Direction;
 (function (Direction) {
     Direction[Direction["NORTH"] = 0] = "NORTH";
@@ -809,16 +813,23 @@ exports.directionOpposite = directionOpposite;
 
 "use strict";
 
-function __export(m) {
-    for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
-}
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __exportStar = (this && this.__exportStar) || function(m, exports) {
+    for (var p in m) if (p !== "default" && !exports.hasOwnProperty(p)) __createBinding(exports, m, p);
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-__export(__webpack_require__(/*! ./direction */ "./src/geom/direction.ts"));
-__export(__webpack_require__(/*! ./direction-flags */ "./src/geom/direction-flags.ts"));
-__export(__webpack_require__(/*! ./offset */ "./src/geom/offset.ts"));
-__export(__webpack_require__(/*! ./size */ "./src/geom/size.ts"));
-__export(__webpack_require__(/*! ./rectangle */ "./src/geom/rectangle.ts"));
-__export(__webpack_require__(/*! ./mask */ "./src/geom/mask.ts"));
+__exportStar(__webpack_require__(/*! ./direction */ "./src/geom/direction.ts"), exports);
+__exportStar(__webpack_require__(/*! ./direction-flags */ "./src/geom/direction-flags.ts"), exports);
+__exportStar(__webpack_require__(/*! ./offset */ "./src/geom/offset.ts"), exports);
+__exportStar(__webpack_require__(/*! ./size */ "./src/geom/size.ts"), exports);
+__exportStar(__webpack_require__(/*! ./rectangle */ "./src/geom/rectangle.ts"), exports);
+__exportStar(__webpack_require__(/*! ./mask */ "./src/geom/mask.ts"), exports);
 
 
 /***/ }),
@@ -833,6 +844,7 @@ __export(__webpack_require__(/*! ./mask */ "./src/geom/mask.ts"));
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.Mask = void 0;
 var geom = __webpack_require__(/*! . */ "./src/geom/index.ts");
 var Mask = /** @class */ (function () {
     // TODO consider Uint8Array for bits
@@ -859,14 +871,14 @@ var Mask = /** @class */ (function () {
         get: function () {
             return this._size.width;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     Object.defineProperty(Mask.prototype, "height", {
         get: function () {
             return this._size.height;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     Mask.prototype.index = function (off) {
@@ -903,6 +915,7 @@ exports.Mask = Mask;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.Offset = void 0;
 var X_FROM_DIRECTION = [0, 1, 0, -1];
 var Y_FROM_DIRECTION = [-1, 0, 1, 0];
 var Offset = /** @class */ (function () {
@@ -928,7 +941,7 @@ var Offset = /** @class */ (function () {
         get: function () {
             return Math.max(Math.abs(this.x), Math.abs(this.y));
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     Object.defineProperty(Offset.prototype, "magnitudeManhattan", {
@@ -936,7 +949,7 @@ var Offset = /** @class */ (function () {
         get: function () {
             return Math.abs(this.x) + Math.abs(this.y);
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     // mutators
@@ -1016,6 +1029,7 @@ exports.Offset = Offset;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.Rectangle = void 0;
 var geom = __webpack_require__(/*! . */ "./src/geom/index.ts");
 var LOCAL_OFF = new geom.Offset();
 var Rectangle = /** @class */ (function () {
@@ -1046,56 +1060,56 @@ var Rectangle = /** @class */ (function () {
         get: function () {
             return this.northWest.y;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     Object.defineProperty(Rectangle.prototype, "southY", {
         get: function () {
             return this.northWest.y + this.size.height - 1;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     Object.defineProperty(Rectangle.prototype, "westX", {
         get: function () {
             return this.northWest.x;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     Object.defineProperty(Rectangle.prototype, "eastX", {
         get: function () {
             return this.northWest.x + this.size.width - 1;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     Object.defineProperty(Rectangle.prototype, "width", {
         get: function () {
             return this.size.width;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     Object.defineProperty(Rectangle.prototype, "height", {
         get: function () {
             return this.size.height;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     Object.defineProperty(Rectangle.prototype, "empty", {
         get: function () {
             return this.size.empty;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     Object.defineProperty(Rectangle.prototype, "area", {
         get: function () {
             return this.size.area;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     // mutators
@@ -1170,6 +1184,7 @@ exports.Rectangle = Rectangle;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.Size = void 0;
 var Size = /** @class */ (function () {
     function Size(width, height) {
         if (typeof width === 'undefined') {
@@ -1192,14 +1207,14 @@ var Size = /** @class */ (function () {
         get: function () {
             return this.width === 0 || this.height === 0;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     Object.defineProperty(Size.prototype, "area", {
         get: function () {
             return this.width * this.height;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     // mutators
@@ -1260,13 +1275,13 @@ exports.Size = Size;
  */
 Object.defineProperty(exports, "__esModule", { value: true });
 var field_of_view_1 = __webpack_require__(/*! ./field-of-view */ "./src/field-of-view.ts");
-exports.FieldOfViewMap = field_of_view_1.FieldOfViewMap;
+Object.defineProperty(exports, "FieldOfViewMap", { enumerable: true, get: function () { return field_of_view_1.FieldOfViewMap; } });
 var warp_rect_1 = __webpack_require__(/*! ./warp-rect */ "./src/warp-rect.ts");
-exports.WarpRect = warp_rect_1.WarpRect;
+Object.defineProperty(exports, "WarpRect", { enumerable: true, get: function () { return warp_rect_1.WarpRect; } });
 var geom_1 = __webpack_require__(/*! ./geom */ "./src/geom/index.ts");
-exports.Direction = geom_1.Direction;
-exports.DirectionFlags = geom_1.DirectionFlags;
-exports.Offset = geom_1.Offset;
+Object.defineProperty(exports, "Direction", { enumerable: true, get: function () { return geom_1.Direction; } });
+Object.defineProperty(exports, "DirectionFlags", { enumerable: true, get: function () { return geom_1.DirectionFlags; } });
+Object.defineProperty(exports, "Offset", { enumerable: true, get: function () { return geom_1.Offset; } });
 
 
 /***/ }),
@@ -1281,6 +1296,7 @@ exports.Offset = geom_1.Offset;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.WarpRect = void 0;
 var geom = __webpack_require__(/*! ./geom */ "./src/geom/index.ts");
 var LOCAL_OFF = new geom.Offset();
 var WarpRect = /** @class */ (function () {
@@ -1328,28 +1344,28 @@ var WarpRect = /** @class */ (function () {
         get: function () {
             return this._rectangle.westX;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     Object.defineProperty(WarpRect.prototype, "northY", {
         get: function () {
             return this._rectangle.northY;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     Object.defineProperty(WarpRect.prototype, "width", {
         get: function () {
             return this._rectangle.width;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     Object.defineProperty(WarpRect.prototype, "height", {
         get: function () {
             return this._rectangle.height;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     WarpRect.prototype.index = function (x, y) {
@@ -1423,4 +1439,4 @@ exports.WarpRect = WarpRect;
 /***/ })
 
 /******/ });
-//# sourceMappingURL=warp-field-1.0.4.js.map
+//# sourceMappingURL=warp-field-1.0.5.js.map

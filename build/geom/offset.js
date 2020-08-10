@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.Offset = void 0;
 var X_FROM_DIRECTION = [0, 1, 0, -1];
 var Y_FROM_DIRECTION = [-1, 0, 1, 0];
 var Offset = /** @class */ (function () {
@@ -25,7 +26,7 @@ var Offset = /** @class */ (function () {
         get: function () {
             return Math.max(Math.abs(this.x), Math.abs(this.y));
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     Object.defineProperty(Offset.prototype, "magnitudeManhattan", {
@@ -33,7 +34,7 @@ var Offset = /** @class */ (function () {
         get: function () {
             return Math.abs(this.x) + Math.abs(this.y);
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     // mutators

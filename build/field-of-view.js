@@ -7,6 +7,7 @@ var __spreadArrays = (this && this.__spreadArrays) || function () {
     return r;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.FieldOfViewMap = void 0;
 var geom = require("./geom");
 var fov_util_1 = require("./fov-util");
 var _1 = require(".");

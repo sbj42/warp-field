@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.WarpRect = void 0;
 var geom = require("./geom");
 var LOCAL_OFF = new geom.Offset();
 var WarpRect = /** @class */ (function () {
@@ -47,28 +48,28 @@ var WarpRect = /** @class */ (function () {
         get: function () {
             return this._rectangle.westX;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     Object.defineProperty(WarpRect.prototype, "northY", {
         get: function () {
             return this._rectangle.northY;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     Object.defineProperty(WarpRect.prototype, "width", {
         get: function () {
             return this._rectangle.width;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     Object.defineProperty(WarpRect.prototype, "height", {
         get: function () {
             return this._rectangle.height;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     WarpRect.prototype.index = function (x, y) {

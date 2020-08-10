@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.whichWedge = exports.warpWedges = exports.warpWedge = exports.cutWedges = exports.cutWedge = exports.WARP_EPSILON = exports.WALL_EPSILON = exports.BODY_EPSILON = exports.TileFlag = void 0;
 var geom = require("./geom");
 // tslint:disable:no-bitwise
 /**

@@ -1,6 +1,7 @@
 "use strict";
 // tslint:disable:no-bitwise
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.directionOpposite = exports.directionToString = exports.DIRECTIONS = exports.Direction = void 0;
 var Direction;
 (function (Direction) {
     Direction[Direction["NORTH"] = 0] = "NORTH";

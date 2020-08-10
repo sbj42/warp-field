@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.Size = void 0;
 var Size = /** @class */ (function () {
     function Size(width, height) {
         if (typeof width === 'undefined') {
@@ -22,14 +23,14 @@ var Size = /** @class */ (function () {
         get: function () {
             return this.width === 0 || this.height === 0;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     Object.defineProperty(Size.prototype, "area", {
         get: function () {
             return this.width * this.height;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     // mutators
