@@ -1,6 +1,6 @@
 {
   "name": "warp-field",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "Portal-casting field-of-view algorithm",
   "keywords": [
     "fov",

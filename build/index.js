@@ -6,6 +6,7 @@
  *  Licensed under the MIT license.
  */
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.Offset = exports.DirectionFlags = exports.Direction = exports.WarpRect = exports.FieldOfViewMap = void 0;
 var field_of_view_1 = require("./field-of-view");
 Object.defineProperty(exports, "FieldOfViewMap", { enumerable: true, get: function () { return field_of_view_1.FieldOfViewMap; } });
 var warp_rect_1 = require("./warp-rect");
