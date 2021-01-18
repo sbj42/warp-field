@@ -5,29 +5,29 @@ import * as geom from '../../src/geom';
 describe('geom/direction-flags', () => {
     describe('directionFlagsToString', () => {
         it('works', () => {
-            assert.equal(geom.directionFlagsToString(
+            assert.strictEqual(geom.directionFlagsToString(
                 geom.DirectionFlags.NONE,
             ), '[]');
-            assert.equal(geom.directionFlagsToString(
+            assert.strictEqual(geom.directionFlagsToString(
                 geom.DirectionFlags.NORTH,
             ), '[N]');
-            assert.equal(geom.directionFlagsToString(
+            assert.strictEqual(geom.directionFlagsToString(
                 geom.DirectionFlags.EAST + geom.DirectionFlags.SOUTH,
             ), '[ES]');
-            assert.equal(geom.directionFlagsToString(
+            assert.strictEqual(geom.directionFlagsToString(
                 geom.DirectionFlags.ALL,
             ), '[NESW]');
         });
     });
     describe('directionFlagsFromCardinalDirection', () => {
         it('works', () => {
-            assert.equal(geom.directionFlagsFromDirection(geom.Direction.NORTH),
+            assert.strictEqual(geom.directionFlagsFromDirection(geom.Direction.NORTH),
                 geom.DirectionFlags.NORTH);
-            assert.equal(geom.directionFlagsFromDirection(geom.Direction.EAST),
+            assert.strictEqual(geom.directionFlagsFromDirection(geom.Direction.EAST),
                 geom.DirectionFlags.EAST);
-            assert.equal(geom.directionFlagsFromDirection(geom.Direction.SOUTH),
+            assert.strictEqual(geom.directionFlagsFromDirection(geom.Direction.SOUTH),
                 geom.DirectionFlags.SOUTH);
-            assert.equal(geom.directionFlagsFromDirection(geom.Direction.WEST),
+            assert.strictEqual(geom.directionFlagsFromDirection(geom.Direction.WEST),
                 geom.DirectionFlags.WEST);
         });
     });
