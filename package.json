@@ -21,23 +21,23 @@
     "build": "rimraf bin build && webpack && webpack -p && tsc && rimraf bin/build"
   },
   "devDependencies": {
-    "@types/benchmark": "^1.0.33",
-    "@types/jest": "^26.0.9",
-    "@types/node": "^14.0.27",
+    "@types/benchmark": "^2.1.0",
+    "@types/jest": "^26.0.20",
+    "@types/node": "^14.14.21",
     "@types/seedrandom": "^2.4.28",
-    "@typescript-eslint/eslint-plugin": "^3.8.0",
-    "@typescript-eslint/parser": "^3.8.0",
+    "@typescript-eslint/eslint-plugin": "^4.14.0",
+    "@typescript-eslint/parser": "^4.14.0",
     "benchmark": "^2.1.4",
-    "eslint": "^7.6.0",
-    "jest": "^26.2.2",
+    "eslint": "^7.18.0",
+    "jest": "^26.6.3",
     "rimraf": "^3.0.2",
     "seedrandom": "^3.0.5",
-    "ts-jest": "^26.1.4",
-    "ts-loader": "^8.0.2",
-    "ts-node": "^8.10.2",
-    "typescript": "^3.9.7",
-    "webpack": "^4.44.1",
-    "webpack-cli": "^3.3.12"
+    "ts-jest": "^26.4.4",
+    "ts-loader": "^8.0.14",
+    "ts-node": "^9.1.1",
+    "typescript": "^4.1.3",
+    "webpack": "^5.15.0",
+    "webpack-cli": "^4.3.1"
   },
   "dependencies": {}
 }
