@@ -18,7 +18,7 @@
     "test": "jest",
     "lint": "eslint \"src/**/*.ts\" && tsc --noEmit",
     "benchmark": "ts-node benchmark/bench-field-of-view.ts",
-    "build": "rimraf bin build && webpack && webpack -p && tsc && rimraf bin/build"
+    "build": "rimraf bin build && webpack --mode development && webpack --mode production && tsc && rimraf bin/build"
   },
   "devDependencies": {
     "@types/benchmark": "^2.1.0",
