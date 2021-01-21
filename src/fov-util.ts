@@ -1,4 +1,4 @@
-import * as geom from './geom';
+import * as geom from 'tiled-geometry';
 import {FieldOfViewMap} from '.';
 
 // tslint:disable:no-bitwise
@@ -8,11 +8,11 @@ import {FieldOfViewMap} from '.';
  * directions, and whether there is a "body" in the tile.
  */
 export enum TileFlag {
-    WALL_NORTH = 1 << geom.Direction.NORTH,
-    WALL_EAST  = 1 << geom.Direction.EAST,
-    WALL_WEST  = 1 << geom.Direction.WEST,
-    WALL_SOUTH = 1 << geom.Direction.SOUTH,
-    BODY       = 1 << geom.DIRECTIONS.length,
+    WALL_NORTH = 1 << geom.CardinalDirection.NORTH,
+    WALL_EAST  = 1 << geom.CardinalDirection.EAST,
+    WALL_WEST  = 1 << geom.CardinalDirection.WEST,
+    WALL_SOUTH = 1 << geom.CardinalDirection.SOUTH,
+    BODY       = 1 << geom.CARDINAL_DIRECTIONS.length,
 }
 
 export interface Warp {
@@ -77,14 +77,18 @@ export const WARP_EPSILON = WALL_EPSILON / 4;
 
 const DEBUG_CUTWEDGE = false;
 
+function debugLog(msg: string) {
+    // eslint-disable-next-line no-console
+    console.info(msg);
+}
+
 /**
  * This function cuts a range of angles out of a wedge.
  */
 export function cutWedge(wedge: Wedge, low: number, high: number): Wedge[] {
     // istanbul ignore next
     if (DEBUG_CUTWEDGE) {
-        // tslint:disable-next-line:no-console
-        console.info(`cut ${wedgeToString(wedge)} ${rangeToString(low, high)}`);
+        debugLog(`cut ${wedgeToString(wedge)} ${rangeToString(low, high)}`);
     }
     let ret: Wedge[];
     if (low <= wedge.low) {
@@ -121,8 +125,7 @@ export function cutWedge(wedge: Wedge, low: number, high: number): Wedge[] {
     }
     // istanbul ignore next
     if (DEBUG_CUTWEDGE) {
-        // tslint:disable-next-line:no-console
-        console.info(`--> ${wedgesToString(ret)}`);
+        debugLog(`--> ${wedgesToString(ret)}`);
     }
     return ret;
 }
@@ -140,8 +143,8 @@ const DEBUG_WARPWEDGE = false;
 export function warpWedge(wedge: Wedge, low: number, high: number, warp: Warp, warpCount: number): Wedge[] {
     // istanbul ignore next
     if (DEBUG_WARPWEDGE) {
-        // tslint:disable-next-line:no-console
-        console.info(`warp ${wedgeToString(wedge)} ${rangeToString(low, high)} ${warp.map.id}`);
+        // eslint-disable-next-line no-console
+        debugLog(`warp ${wedgeToString(wedge)} ${rangeToString(low, high)} ${warp.map.id}`);
     }
     let ret: Wedge[];
     if (low <= wedge.low) {
@@ -200,8 +203,7 @@ export function warpWedge(wedge: Wedge, low: number, high: number, warp: Warp, w
     }
     // istanbul ignore next
     if (DEBUG_WARPWEDGE) {
-        // tslint:disable-next-line:no-console
-        console.info(`--> ${wedgesToString(ret)}`);
+        debugLog(`--> ${wedgesToString(ret)}`);
     }
     return ret;
 }
@@ -214,7 +216,7 @@ export function warpWedges(wedges: Wedge[], low: number, high: number, warp: War
     return ret;
 }
 
-export function whichWedge(wedges: Wedge[], wedgeIndex: number, centerSlope: number) {
+export function whichWedge(wedges: Wedge[], wedgeIndex: number, centerSlope: number): number {
     // determine the wedge containing centerSlope,
     // or if there isn't one, then the one nearest to centerSlope
     // or if two are very close, the one with the least warp count
@@ -247,7 +249,9 @@ export function whichWedge(wedges: Wedge[], wedgeIndex: number, centerSlope: num
             } else {
                 // same warp count
                 // compare map ids
-                if (wedges[cur].warp.map.id < wedges[cur + 1].warp.map.id) {
+                const a = wedges[cur].warp;
+                const b = wedges[cur + 1].warp;
+                if (a && b && a.map.id < b.map.id) {
                     return cur;
                 } else {
                     return cur + 1;

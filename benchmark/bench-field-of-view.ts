@@ -2,12 +2,12 @@ import * as Benchmark from 'benchmark';
 import * as seedrandom from 'seedrandom';
 
 import * as fov from '../src';
-import * as geom from '../src/geom';
+import * as geom from 'tiled-geometry';
 
-// tslint:disable:no-console
+/* eslint-disable no-console */
 
 const suite = new Benchmark.Suite();
-suite.on('cycle', (event: any) => {
+suite.on('cycle', (event: {target: string}) => {
     console.log(`${event.target}`);
 });
 const width = 31;
@@ -26,16 +26,16 @@ const origin = {x: 15, y: 15};
     for (let y = 0; y < height; y ++) {
         for (let x = 0; x < width; x ++) {
             if (y > 0 && random() < chance) {
-                fovMap.addWall(x, y, geom.Direction.NORTH);
+                fovMap.addWall(x, y, geom.CardinalDirection.NORTH);
             }
             if (x < width - 1 && random() < chance) {
-                fovMap.addWall(x, y, geom.Direction.EAST);
+                fovMap.addWall(x, y, geom.CardinalDirection.EAST);
             }
             if (y < height - 1 && random() < chance) {
-                fovMap.addWall(x, y, geom.Direction.SOUTH);
+                fovMap.addWall(x, y, geom.CardinalDirection.SOUTH);
             }
             if (x > 0 && random() < chance) {
-                fovMap.addWall(x, y, geom.Direction.WEST);
+                fovMap.addWall(x, y, geom.CardinalDirection.WEST);
             }
         }
     }
@@ -63,10 +63,10 @@ const origin = {x: 15, y: 15};
     const fovMapB = new fov.FieldOfViewMap('b', width, height);
     const fovMapC = new fov.FieldOfViewMap('c', width, height);
     for (let y = 0; y < height; y ++) {
-        fovMap.addWarp(origin.x - 1, y, geom.Direction.WEST, fovMapB, origin.x - 2, y);
+        fovMap.addWarp(origin.x - 1, y, geom.CardinalDirection.WEST, fovMapB, origin.x - 2, y);
     }
     for (let x = 0; x < width; x ++) {
-        fovMap.addWarp(x, origin.y + 1, geom.Direction.SOUTH, fovMapC, x, origin.y + 2);
+        fovMap.addWarp(x, origin.y + 1, geom.CardinalDirection.SOUTH, fovMapC, x, origin.y + 2);
     }
     suite.add('FieldOfViewMap#getFieldOfView([15x15 with some warps])', () => {
         fovMap.getFieldOfView(origin.x, origin.y, 15);

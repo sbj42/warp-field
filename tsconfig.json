@@ -1,18 +1,15 @@
 {
-    "compilerOptions": {
-        "sourceMap": true,
-        "noImplicitAny": true,
-        "noImplicitReturns": true,
-        "noImplicitThis": true,
-        "strictNullChecks": false,
-        "noUnusedLocals": true,
-        "declaration": true,
-        "module": "commonjs",
-        "target": "es5",
-        "lib": ["es6"],
-        "outDir": "build"
-    },
-    "include": [
-        "src/**/*"
-    ]
+  "compilerOptions": {
+    "target": "es6",
+    "module": "commonjs",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "downlevelIteration": true,
+    "rootDir": "src",
+    "outDir": "lib",
+    "declaration": true
+  },
+  "include": [ "src/**/*" ]
 }

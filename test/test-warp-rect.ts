@@ -1,7 +1,7 @@
 import * as assert from 'assert';
 
 import { WarpRect } from '../src/warp-rect';
-import * as geom from '../src/geom';
+import * as geom from 'tiled-geometry';
 import { FieldOfViewMap } from '../src';
 
 describe('warp-rect', () => {
@@ -51,8 +51,8 @@ describe('warp-rect', () => {
             });
             assert.strictEqual(o.getMask(2, 3), true);
             assert.strictEqual(o.getMap(2, 3), map);
-            assert.strictEqual(o.getOffset(2, 3).x, 1);
-            assert.strictEqual(o.getOffset(2, 3).y, 0);
+            assert.strictEqual(o.getOffset(2, 3)?.x, 1);
+            assert.strictEqual(o.getOffset(2, 3)?.y, 0);
             o.set(new geom.Offset().set(2, 3), false, undefined);
             assert.strictEqual(o.getMask(2, 3), false);
             assert.strictEqual(o.getMap(2, 3), undefined);
@@ -78,38 +78,38 @@ describe('warp-rect', () => {
             assert.strictEqual(o.index(3, 2), 2);
         });
     });
-    describe('#getAt()', () => {
+    describe('#getAtIndex()', () => {
         it('works', () => {
             const map = new FieldOfViewMap('A', 2, 2);
             const o = new WarpRect({westX: 1, northY: 2, width: 3, height: 4});
-            assert.strictEqual(o.getMaskAt(4), false);
-            assert.strictEqual(o.getMapAt(4), undefined);
-            assert.strictEqual(o.getOffsetAt(4), undefined);
+            assert.strictEqual(o.getMaskAtIndex(4), false);
+            assert.strictEqual(o.getMapAtIndex(4), undefined);
+            assert.strictEqual(o.getOffsetAtIndex(4), undefined);
             o.set(new geom.Offset().set(2, 3), true, {
                 map,
                 offset: new geom.Offset().set(1, 0),
             });
-            assert.strictEqual(o.getMaskAt(4), true);
-            assert.strictEqual(o.getMapAt(4), map);
-            assert.strictEqual(o.getOffsetAt(4).x, 1);
-            assert.strictEqual(o.getOffsetAt(4).y, 0);
+            assert.strictEqual(o.getMaskAtIndex(4), true);
+            assert.strictEqual(o.getMapAtIndex(4), map);
+            assert.strictEqual(o.getOffsetAtIndex(4)?.x, 1);
+            assert.strictEqual(o.getOffsetAtIndex(4)?.y, 0);
         });
     });
-    describe('#setAt()', () => {
+    describe('#setAtIndex()', () => {
         it('works', () => {
             const map = new FieldOfViewMap('A', 2, 2);
             const o = new WarpRect({westX: 1, northY: 2, width: 3, height: 4});
-            assert.strictEqual(o.getMaskAt(4), false);
-            assert.strictEqual(o.getMapAt(4), undefined);
-            assert.strictEqual(o.getOffsetAt(4), undefined);
-            o.setAt(4, true, {
+            assert.strictEqual(o.getMaskAtIndex(4), false);
+            assert.strictEqual(o.getMapAtIndex(4), undefined);
+            assert.strictEqual(o.getOffsetAtIndex(4), undefined);
+            o.setAtIndex(4, true, {
                 map,
                 offset: new geom.Offset().set(1, 0),
             });
-            assert.strictEqual(o.getMaskAt(4), true);
-            assert.strictEqual(o.getMapAt(4), map);
-            assert.strictEqual(o.getOffsetAt(4).x, 1);
-            assert.strictEqual(o.getOffsetAt(4).y, 0);
+            assert.strictEqual(o.getMaskAtIndex(4), true);
+            assert.strictEqual(o.getMapAtIndex(4), map);
+            assert.strictEqual(o.getOffsetAtIndex(4)?.x, 1);
+            assert.strictEqual(o.getOffsetAtIndex(4)?.y, 0);
         });
     });
 });

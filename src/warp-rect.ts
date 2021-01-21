@@ -1,24 +1,20 @@
-import * as geom from './geom';
+import * as geom from 'tiled-geometry';
 import {FieldOfViewMap} from '.';
-
-const LOCAL_OFF = new geom.Offset();
 
 export interface Warp {
     map: FieldOfViewMap;
     offset: geom.Offset;
 }
 
-import {Offset} from './geom';
-
 export class WarpRect implements geom.RectangleLike {
     private readonly _rectangle = new geom.Rectangle();
     private readonly _mask: geom.Mask;
-    private readonly _warps: Warp[];
+    private readonly _warps: (Warp | undefined)[];
 
     constructor(rect: geom.RectangleLike, initialValue = false) {
         this._rectangle.copyFrom(rect);
         this._mask = new geom.Mask(rect, initialValue);
-        this._warps = new Array<Warp>(this._rectangle.area);
+        this._warps = new Array<Warp | undefined>(this._rectangle.area);
     }
 
     private _warpsToString() {
@@ -28,7 +24,7 @@ export class WarpRect implements geom.RectangleLike {
             for (let x = 0; x < this._rectangle.width; x ++) {
                 off.set(x, y).addOffset(this._rectangle.northWest);
                 if (this.getMask(off.x, off.y)) {
-                    const warp = this._getWarp(off);
+                    const warp = this._getWarp(off.x, off.y);
                     if (typeof warp === 'undefined') {
                         ret += '-';
                     } else {
@@ -43,55 +39,53 @@ export class WarpRect implements geom.RectangleLike {
         return ret;
     }
 
-    private _getWarpAt(index: number) {
+    private _getWarpAtIndex(index: number) {
         return this._warps[index];
     }
 
-    private _getWarp(off: geom.OffsetLike) {
-        return this._warps[this._rectangle.index(off)];
+    private _getWarp(x: number, y: number) {
+        return this._warps[this._rectangle.index(x, y)];
     }
 
     // accessors
 
-    toString() {
+    toString(): string {
         return `${this._rectangle.northWest}\n${this._warpsToString()}`;
     }
 
-    get westX() {
+    get westX(): number {
         return this._rectangle.westX;
     }
 
-    get northY() {
+    get northY(): number {
         return this._rectangle.northY;
     }
 
-    get width() {
+    get width(): number {
         return this._rectangle.width;
     }
 
-    get height() {
+    get height(): number {
         return this._rectangle.height;
     }
 
-    index(x: number, y: number) {
-        LOCAL_OFF.set(x, y).subtractOffset(this._rectangle.northWest);
-        return this._mask.index(LOCAL_OFF);
+    index(x: number, y: number): number {
+        return this._rectangle.index(x, y);
     }
 
-    getMaskAt(index: number) {
-        return this._mask.getAt(index);
+    getMaskAtIndex(index: number): boolean {
+        return this._mask.getAtIndex(index);
     }
 
-    getMask(x: number, y: number) {
-        LOCAL_OFF.set(x, y);
-        if (!this._rectangle.containsOffset(LOCAL_OFF)) {
+    getMask(x: number, y: number): boolean {
+        if (!this._rectangle.contains(x, y)) {
             return false;
         }
-        return this._mask.getAt(this._rectangle.index(LOCAL_OFF));
+        return this._mask.getAtIndex(this._rectangle.index(x, y));
     }
 
-    getMapAt(index: number) {
-        const warp = this._getWarpAt(index);
+    getMapAtIndex(index: number): FieldOfViewMap | undefined {
+        const warp = this._getWarpAtIndex(index);
         if (warp) {
             return warp.map;
         } else {
@@ -99,9 +93,8 @@ export class WarpRect implements geom.RectangleLike {
         }
     }
 
-    getMap(x: number, y: number) {
-        LOCAL_OFF.set(x, y);
-        const warp = this._getWarp(LOCAL_OFF);
+    getMap(x: number, y: number): FieldOfViewMap | undefined {
+        const warp = this._getWarp(x, y);
         if (warp) {
             return warp.map;
         } else {
@@ -109,8 +102,8 @@ export class WarpRect implements geom.RectangleLike {
         }
     }
 
-    getOffsetAt(index: number): Offset {
-        const warp = this._getWarpAt(index);
+    getOffsetAtIndex(index: number): geom.Offset | undefined {
+        const warp = this._getWarpAtIndex(index);
         if (warp) {
             return warp.offset;
         } else {
@@ -118,9 +111,8 @@ export class WarpRect implements geom.RectangleLike {
         }
     }
 
-    getOffset(x: number, y: number): Offset {
-        LOCAL_OFF.set(x, y);
-        const warp = this._getWarp(LOCAL_OFF);
+    getOffset(x: number, y: number): geom.Offset | undefined {
+        const warp = this._getWarp(x, y);
         if (warp) {
             return warp.offset;
         } else {
@@ -130,15 +122,13 @@ export class WarpRect implements geom.RectangleLike {
 
     // mutators
 
-    setAt(index: number, value: boolean, warp: Warp | undefined) {
-        this._mask.setAt(index, value);
+    setAtIndex(index: number, value: boolean, warp: Warp | undefined): this {
+        this._mask.setAtIndex(index, value);
         this._warps[index] = warp;
         return this;
     }
 
-    set(off: geom.OffsetLike, value: boolean, warp: Warp | undefined) {
-        this._mask.setAt(this._rectangle.index(off), value);
-        this._warps[this._rectangle.index(off)] = warp;
-        return this;
+    set(off: geom.OffsetLike, value: boolean, warp: Warp | undefined): this {
+        return this.setAtIndex(this._rectangle.index(off.x, off.y), value, warp);
     }
 }

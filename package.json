@@ -1,6 +1,6 @@
 {
   "name": "warp-field",
-  "version": "1.0.6",
+  "version": "2.0.0",
   "description": "Portal-casting field-of-view algorithm",
   "keywords": [
     "fov",
@@ -9,16 +9,21 @@
     "vision",
     "portals"
   ],
-  "main": "build/index.js",
-  "typings": "build/index.d.ts",
-  "repository": "https://github.com/sbj42/warp-field.git",
   "author": "James Clark <jameswclark@gmail.com>",
   "license": "MIT",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "repository": "https://github.com/sbj42/warp-field.git",
+  "files": [
+    "lib"
+  ],
   "scripts": {
-    "test": "jest",
+    "test": "jest --coverage",
     "lint": "eslint \"src/**/*.ts\" && tsc --noEmit",
-    "benchmark": "ts-node benchmark/bench-field-of-view.ts",
-    "build": "rimraf bin build && webpack --mode development && webpack --mode production && tsc && rimraf bin/build"
+    "build": "rimraf lib && tsc",
+    "dist": "rimraf dist && webpack --mode development && webpack --mode production",
+    "prepublish": "npm run build",
+    "benchmark": "ts-node benchmark/bench-field-of-view.ts"
   },
   "devDependencies": {
     "@types/benchmark": "^2.1.0",
@@ -39,5 +44,7 @@
     "webpack": "^5.15.0",
     "webpack-cli": "^4.3.1"
   },
-  "dependencies": {}
+  "dependencies": {
+    "tiled-geometry": "^1.0.0"
+  }
 }

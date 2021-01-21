@@ -1,6 +1,6 @@
 # WarpField
 
-![Dependencies](https://img.shields.io/badge/dependencies-none-green.svg)
+![Dependencies](https://img.shields.io/badge/dependencies-1-green.svg)
 [![Node.js CI](https://github.com/sbj42/warp-field/workflows/Node.js%20CI/badge.svg)](https://github.com/sbj42/warp-field/actions?query=workflow%3A%22Node.js+CI%22)
 [![License](https://img.shields.io/github/license/sbj42/warp-field.svg)](https://github.com/sbj42/warp-field)
 
@@ -29,9 +29,9 @@ const map1 = new WarpField.FieldOfViewMap('map1', width, height);
 
 Add some walls and bodies:
 ```js
-map1.addWall(3, 2, WarpField.Direction.NORTH);
-map1.addWall(3, 1, WarpField.Direction.WEST);
-map1.addWall(3, 2, WarpField.Direction.SOUTH);
+map1.addWall(3, 2, WarpField.CardinalDirection.NORTH);
+map1.addWall(3, 1, WarpField.CardinalDirection.WEST);
+map1.addWall(3, 2, WarpField.CardinalDirection.SOUTH);
 map1.addBody(4, 2);
 ```
 
@@ -40,13 +40,13 @@ Create another map:
 const width = 5;
 const height = 5;
 const map2 = new WarpField.FieldOfViewMap('map2', width, height);
-map2.addWall(3, 2, WarpField.Direction.SOUTH);
+map2.addWall(3, 2, WarpField.CardinalDirection.SOUTH);
 map2.addBody(2, 4);
 ```
 
 Add a warp from one map to the other:
 ```js
-map1.addWarp(3, 2, WarpField.Direction.EAST, map2, 1, 2);
+map1.addWarp(3, 2, WarpField.CardinalDirection.EAST, map2, 1, 2);
 ```
 
 Compute the field of view:

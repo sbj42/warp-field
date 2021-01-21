@@ -1,7 +1,7 @@
 import * as assert from 'assert';
 
 import * as WarpField from '../src';
-import * as geom from '../src/geom';
+import * as geom from 'tiled-geometry';
 
 describe('field-of-view', () => {
     it('works in middle of empty field', () => {
@@ -61,61 +61,61 @@ describe('field-of-view', () => {
     });
     it('can add and remove walls', () => {
         const fovMap = new WarpField.FieldOfViewMap('A', 4, 4);
-        fovMap.addWall(1, 1, geom.Direction.NORTH);
-        fovMap.addWall(1, 2, geom.Direction.WEST);
-        fovMap.addWall(2, 1, geom.Direction.EAST);
-        fovMap.addWall(2, 2, geom.Direction.SOUTH);
-        assert.strictEqual(fovMap.getWall(1, 1, geom.Direction.NORTH), true);
-        assert.strictEqual(fovMap.getWall(1, 0, geom.Direction.SOUTH), true);
-        assert.strictEqual(fovMap.getWall(1, 2, geom.Direction.WEST), true);
-        assert.strictEqual(fovMap.getWall(0, 2, geom.Direction.EAST), true);
-        assert.strictEqual(fovMap.getWall(2, 1, geom.Direction.EAST), true);
-        assert.strictEqual(fovMap.getWall(3, 1, geom.Direction.WEST), true);
-        assert.strictEqual(fovMap.getWall(2, 2, geom.Direction.SOUTH), true);
-        assert.strictEqual(fovMap.getWall(2, 3, geom.Direction.NORTH), true);
-        fovMap.removeWall(1, 1, geom.Direction.NORTH);
-        fovMap.removeWall(1, 2, geom.Direction.WEST);
-        fovMap.removeWall(2, 1, geom.Direction.EAST);
-        fovMap.removeWall(2, 2, geom.Direction.SOUTH);
-        assert.strictEqual(fovMap.getWall(1, 1, geom.Direction.NORTH), false);
-        assert.strictEqual(fovMap.getWall(1, 0, geom.Direction.SOUTH), false);
-        assert.strictEqual(fovMap.getWall(1, 2, geom.Direction.WEST), false);
-        assert.strictEqual(fovMap.getWall(0, 2, geom.Direction.EAST), false);
-        assert.strictEqual(fovMap.getWall(2, 1, geom.Direction.EAST), false);
-        assert.strictEqual(fovMap.getWall(3, 1, geom.Direction.WEST), false);
-        assert.strictEqual(fovMap.getWall(2, 2, geom.Direction.SOUTH), false);
-        assert.strictEqual(fovMap.getWall(2, 3, geom.Direction.NORTH), false);
+        fovMap.addWall(1, 1, WarpField.CardinalDirection.NORTH);
+        fovMap.addWall(1, 2, WarpField.CardinalDirection.WEST);
+        fovMap.addWall(2, 1, WarpField.CardinalDirection.EAST);
+        fovMap.addWall(2, 2, WarpField.CardinalDirection.SOUTH);
+        assert.strictEqual(fovMap.getWall(1, 1, WarpField.CardinalDirection.NORTH), true);
+        assert.strictEqual(fovMap.getWall(1, 0, WarpField.CardinalDirection.SOUTH), true);
+        assert.strictEqual(fovMap.getWall(1, 2, WarpField.CardinalDirection.WEST), true);
+        assert.strictEqual(fovMap.getWall(0, 2, WarpField.CardinalDirection.EAST), true);
+        assert.strictEqual(fovMap.getWall(2, 1, WarpField.CardinalDirection.EAST), true);
+        assert.strictEqual(fovMap.getWall(3, 1, WarpField.CardinalDirection.WEST), true);
+        assert.strictEqual(fovMap.getWall(2, 2, WarpField.CardinalDirection.SOUTH), true);
+        assert.strictEqual(fovMap.getWall(2, 3, WarpField.CardinalDirection.NORTH), true);
+        fovMap.removeWall(1, 1, WarpField.CardinalDirection.NORTH);
+        fovMap.removeWall(1, 2, WarpField.CardinalDirection.WEST);
+        fovMap.removeWall(2, 1, WarpField.CardinalDirection.EAST);
+        fovMap.removeWall(2, 2, WarpField.CardinalDirection.SOUTH);
+        assert.strictEqual(fovMap.getWall(1, 1, WarpField.CardinalDirection.NORTH), false);
+        assert.strictEqual(fovMap.getWall(1, 0, WarpField.CardinalDirection.SOUTH), false);
+        assert.strictEqual(fovMap.getWall(1, 2, WarpField.CardinalDirection.WEST), false);
+        assert.strictEqual(fovMap.getWall(0, 2, WarpField.CardinalDirection.EAST), false);
+        assert.strictEqual(fovMap.getWall(2, 1, WarpField.CardinalDirection.EAST), false);
+        assert.strictEqual(fovMap.getWall(3, 1, WarpField.CardinalDirection.WEST), false);
+        assert.strictEqual(fovMap.getWall(2, 2, WarpField.CardinalDirection.SOUTH), false);
+        assert.strictEqual(fovMap.getWall(2, 3, WarpField.CardinalDirection.NORTH), false);
     });
     it('can add and remove one-way walls', () => {
         const fovMap = new WarpField.FieldOfViewMap('A', 4, 4);
-        assert.strictEqual(fovMap.getWall(1, 1, geom.Direction.NORTH), false);
-        fovMap.addWall(1, 1, geom.Direction.NORTH, true);
-        assert.strictEqual(fovMap.getWall(1, 1, geom.Direction.NORTH), true);
-        assert.strictEqual(fovMap.getWall(1, 0, geom.Direction.SOUTH), false);
-        fovMap.removeWall(1, 1, geom.Direction.NORTH, true);
-        assert.strictEqual(fovMap.getWall(1, 1, geom.Direction.NORTH), false);
+        assert.strictEqual(fovMap.getWall(1, 1, WarpField.CardinalDirection.NORTH), false);
+        fovMap.addWall(1, 1, WarpField.CardinalDirection.NORTH, true);
+        assert.strictEqual(fovMap.getWall(1, 1, WarpField.CardinalDirection.NORTH), true);
+        assert.strictEqual(fovMap.getWall(1, 0, WarpField.CardinalDirection.SOUTH), false);
+        fovMap.removeWall(1, 1, WarpField.CardinalDirection.NORTH, true);
+        assert.strictEqual(fovMap.getWall(1, 1, WarpField.CardinalDirection.NORTH), false);
     });
     it('can remove edge walls', () => {
         const fovMap = new WarpField.FieldOfViewMap('A', 4, 4, true);
-        fovMap.removeWall(0, 0, geom.Direction.NORTH);
-        fovMap.removeWall(0, 1, geom.Direction.WEST);
-        fovMap.removeWall(3, 2, geom.Direction.EAST);
-        fovMap.removeWall(2, 3, geom.Direction.SOUTH);
+        fovMap.removeWall(0, 0, WarpField.CardinalDirection.NORTH);
+        fovMap.removeWall(0, 1, WarpField.CardinalDirection.WEST);
+        fovMap.removeWall(3, 2, WarpField.CardinalDirection.EAST);
+        fovMap.removeWall(2, 3, WarpField.CardinalDirection.SOUTH);
     });
     it('works for a simple square walled-off room', () => {
         const fovMap = new WarpField.FieldOfViewMap('A', 7, 7);
-        fovMap.addWall(2, 2, geom.Direction.NORTH);
-        fovMap.addWall(3, 2, geom.Direction.NORTH);
-        fovMap.addWall(4, 2, geom.Direction.NORTH);
-        fovMap.addWall(2, 2, geom.Direction.WEST);
-        fovMap.addWall(2, 3, geom.Direction.WEST);
-        fovMap.addWall(2, 4, geom.Direction.WEST);
-        fovMap.addWall(4, 2, geom.Direction.EAST);
-        fovMap.addWall(4, 3, geom.Direction.EAST);
-        fovMap.addWall(4, 4, geom.Direction.EAST);
-        fovMap.addWall(2, 4, geom.Direction.SOUTH);
-        fovMap.addWall(3, 4, geom.Direction.SOUTH);
-        fovMap.addWall(4, 4, geom.Direction.SOUTH);
+        fovMap.addWall(2, 2, WarpField.CardinalDirection.NORTH);
+        fovMap.addWall(3, 2, WarpField.CardinalDirection.NORTH);
+        fovMap.addWall(4, 2, WarpField.CardinalDirection.NORTH);
+        fovMap.addWall(2, 2, WarpField.CardinalDirection.WEST);
+        fovMap.addWall(2, 3, WarpField.CardinalDirection.WEST);
+        fovMap.addWall(2, 4, WarpField.CardinalDirection.WEST);
+        fovMap.addWall(4, 2, WarpField.CardinalDirection.EAST);
+        fovMap.addWall(4, 3, WarpField.CardinalDirection.EAST);
+        fovMap.addWall(4, 4, WarpField.CardinalDirection.EAST);
+        fovMap.addWall(2, 4, WarpField.CardinalDirection.SOUTH);
+        fovMap.addWall(3, 4, WarpField.CardinalDirection.SOUTH);
+        fovMap.addWall(4, 4, WarpField.CardinalDirection.SOUTH);
         const fov = fovMap.getFieldOfView(3, 3, 2);
         assert.strictEqual(fov.toString(), `(1,1)
 .....
@@ -159,14 +159,14 @@ describe('field-of-view', () => {
     });
     it('works for someone standing in gaps in a wall', () => {
         const fovMap = new WarpField.FieldOfViewMap('A', 7, 7);
-        fovMap.addWall(2, 2, geom.Direction.NORTH);
-        fovMap.addWall(4, 2, geom.Direction.NORTH);
-        fovMap.addWall(2, 2, geom.Direction.WEST);
-        fovMap.addWall(2, 4, geom.Direction.WEST);
-        fovMap.addWall(4, 2, geom.Direction.EAST);
-        fovMap.addWall(4, 4, geom.Direction.EAST);
-        fovMap.addWall(2, 4, geom.Direction.SOUTH);
-        fovMap.addWall(4, 4, geom.Direction.SOUTH);
+        fovMap.addWall(2, 2, WarpField.CardinalDirection.NORTH);
+        fovMap.addWall(4, 2, WarpField.CardinalDirection.NORTH);
+        fovMap.addWall(2, 2, WarpField.CardinalDirection.WEST);
+        fovMap.addWall(2, 4, WarpField.CardinalDirection.WEST);
+        fovMap.addWall(4, 2, WarpField.CardinalDirection.EAST);
+        fovMap.addWall(4, 4, WarpField.CardinalDirection.EAST);
+        fovMap.addWall(2, 4, WarpField.CardinalDirection.SOUTH);
+        fovMap.addWall(4, 4, WarpField.CardinalDirection.SOUTH);
         fovMap.addBody(3, 2);
         fovMap.addBody(2, 3);
         fovMap.addBody(4, 3);
@@ -199,14 +199,14 @@ describe('field-of-view', () => {
     });
     it('works for gaps in walls', () => {
         const fovMap = new WarpField.FieldOfViewMap('A', 7, 7);
-        fovMap.addWall(2, 2, geom.Direction.NORTH);
-        fovMap.addWall(4, 2, geom.Direction.NORTH);
-        fovMap.addWall(2, 2, geom.Direction.WEST);
-        fovMap.addWall(2, 4, geom.Direction.WEST);
-        fovMap.addWall(4, 2, geom.Direction.EAST);
-        fovMap.addWall(4, 4, geom.Direction.EAST);
-        fovMap.addWall(2, 4, geom.Direction.SOUTH);
-        fovMap.addWall(4, 4, geom.Direction.SOUTH);
+        fovMap.addWall(2, 2, WarpField.CardinalDirection.NORTH);
+        fovMap.addWall(4, 2, WarpField.CardinalDirection.NORTH);
+        fovMap.addWall(2, 2, WarpField.CardinalDirection.WEST);
+        fovMap.addWall(2, 4, WarpField.CardinalDirection.WEST);
+        fovMap.addWall(4, 2, WarpField.CardinalDirection.EAST);
+        fovMap.addWall(4, 4, WarpField.CardinalDirection.EAST);
+        fovMap.addWall(2, 4, WarpField.CardinalDirection.SOUTH);
+        fovMap.addWall(4, 4, WarpField.CardinalDirection.SOUTH);
         const fov = fovMap.getFieldOfView(3, 3, 3);
         assert.strictEqual(fov.toString(), `(0,0)
 ..---..
@@ -220,9 +220,9 @@ describe('field-of-view', () => {
     });
     it('works when a body cuts two wedges', () => {
         const fovMap = new WarpField.FieldOfViewMap('A', 2, 8, true);
-        fovMap.addWall(0, 3, geom.Direction.EAST);
-        fovMap.addWall(0, 6, geom.Direction.EAST);
-        fovMap.addWall(0, 7, geom.Direction.EAST);
+        fovMap.addWall(0, 3, WarpField.CardinalDirection.EAST);
+        fovMap.addWall(0, 6, WarpField.CardinalDirection.EAST);
+        fovMap.addWall(0, 7, WarpField.CardinalDirection.EAST);
         fovMap.addBody(1, 6);
         // O=origin, X=body, #=wall, Y=should be occluded
         // +---+---+
@@ -247,8 +247,8 @@ describe('field-of-view', () => {
     });
     it('works when two separate walls arrive at the same angle', () => {
         const fovMap = new WarpField.FieldOfViewMap('A', 6, 3, true);
-        fovMap.addWall(2, 0, geom.Direction.SOUTH);
-        fovMap.addWall(4, 2, geom.Direction.EAST);
+        fovMap.addWall(2, 0, WarpField.CardinalDirection.SOUTH);
+        fovMap.addWall(4, 2, WarpField.CardinalDirection.EAST);
         // O=origin, #=wall, Y=should be occluded
         // +---+---+---+---+---+---+
         // | O |   |   |   |   |   |
@@ -262,8 +262,8 @@ describe('field-of-view', () => {
     });
     it('works for a tile blocked entirely by its near walls', () => {
         const fovMap = new WarpField.FieldOfViewMap('A', 3, 3);
-        fovMap.addWall(2, 1, geom.Direction.SOUTH);
-        fovMap.addWall(1, 2, geom.Direction.EAST);
+        fovMap.addWall(2, 1, WarpField.CardinalDirection.SOUTH);
+        fovMap.addWall(1, 2, WarpField.CardinalDirection.EAST);
         // O=origin, #=wall, Y=should be occluded
         // +---+---+
         // | O |   |
@@ -277,8 +277,8 @@ describe('field-of-view', () => {
         const fovMap = new WarpField.FieldOfViewMap('A', 3, 3);
         fovMap.addBody(2, 1);
         fovMap.addBody(1, 2);
-        fovMap.addWall(2, 1, geom.Direction.SOUTH);
-        fovMap.addWall(1, 2, geom.Direction.EAST);
+        fovMap.addWall(2, 1, WarpField.CardinalDirection.SOUTH);
+        fovMap.addWall(1, 2, WarpField.CardinalDirection.EAST);
         // O=origin, X=body, #=wall, Y=should be occluded by body and walls
         // +---+---+
         // | O | X |
@@ -291,9 +291,9 @@ describe('field-of-view', () => {
     it('works through a warp on a single east edge', () => {
         const fovMap1 = new WarpField.FieldOfViewMap('A', 5, 5);
         const fovMap2 = new WarpField.FieldOfViewMap('B', 5, 5);
-        fovMap1.addWarp(2, 2, geom.Direction.EAST, fovMap2, 3, 2);
-        assert.strictEqual(fovMap1.getWarpFlags(2, 2), geom.directionFlagsFromDirection(geom.Direction.EAST));
-        assert.strictEqual(fovMap1.getWarpFlag(2, 2, geom.Direction.EAST), true);
+        fovMap1.addWarp(2, 2, WarpField.CardinalDirection.EAST, fovMap2, 3, 2);
+        assert.strictEqual(fovMap1.getWarpFlags(2, 2), geom.cardinalDirectionFlagsFromCardinalDirection(WarpField.CardinalDirection.EAST));
+        assert.strictEqual(fovMap1.getWarpFlag(2, 2, WarpField.CardinalDirection.EAST), true);
         const fov = fovMap1.getFieldOfView(2, 2, 2);
         assert.strictEqual(fov.toString(), `(0,0)
 -----
@@ -306,10 +306,10 @@ describe('field-of-view', () => {
     it('can remove a warp', () => {
         const fovMap1 = new WarpField.FieldOfViewMap('A', 5, 5);
         const fovMap2 = new WarpField.FieldOfViewMap('B', 5, 5);
-        fovMap1.addWarp(2, 2, geom.Direction.EAST, fovMap2, 3, 2);
-        assert.strictEqual(fovMap1.getWarpFlag(2, 2, geom.Direction.EAST), true);
-        fovMap1.removeWarp(2, 2, geom.Direction.EAST);
-        assert.strictEqual(fovMap1.getWarpFlag(2, 2, geom.Direction.EAST), false);
+        fovMap1.addWarp(2, 2, WarpField.CardinalDirection.EAST, fovMap2, 3, 2);
+        assert.strictEqual(fovMap1.getWarpFlag(2, 2, WarpField.CardinalDirection.EAST), true);
+        fovMap1.removeWarp(2, 2, WarpField.CardinalDirection.EAST);
+        assert.strictEqual(fovMap1.getWarpFlag(2, 2, WarpField.CardinalDirection.EAST), false);
         const fov = fovMap1.getFieldOfView(2, 2, 2);
         assert.strictEqual(fov.toString(), `(0,0)
 -----
@@ -322,7 +322,7 @@ describe('field-of-view', () => {
     it('works through a warp on a single north edge', () => {
         const fovMap1 = new WarpField.FieldOfViewMap('A', 5, 5);
         const fovMap2 = new WarpField.FieldOfViewMap('B', 5, 5);
-        fovMap1.addWarp(2, 2, geom.Direction.NORTH, fovMap2, 2, 1);
+        fovMap1.addWarp(2, 2, WarpField.CardinalDirection.NORTH, fovMap2, 2, 1);
         const fov = fovMap1.getFieldOfView(2, 2, 2);
         assert.strictEqual(fov.toString(), `(0,0)
 -BBB-
@@ -382,19 +382,19 @@ describe('field-of-view', () => {
     });
     it('gets example 3 right', () => {
         const fovMap = new WarpField.FieldOfViewMap('A', 11, 11);
-        fovMap.addWall(2, 0, geom.Direction.EAST);
-        fovMap.addWall(2, 1, geom.Direction.EAST);
-        fovMap.addWall(2, 2, geom.Direction.EAST);
-        fovMap.addWall(2, 3, geom.Direction.EAST);
-        fovMap.addWall(5, 1, geom.Direction.SOUTH);
-        fovMap.addWall(6, 3, geom.Direction.NORTH);
-        fovMap.addWall(7, 3, geom.Direction.NORTH);
-        fovMap.addWall(4, 4, geom.Direction.WEST);
-        fovMap.addWall(5, 5, geom.Direction.EAST);
-        fovMap.addWall(3, 6, geom.Direction.NORTH);
-        fovMap.addWall(3, 6, geom.Direction.EAST);
-        fovMap.addWall(4, 8, geom.Direction.WEST);
-        fovMap.addWall(4, 8, geom.Direction.SOUTH);
+        fovMap.addWall(2, 0, WarpField.CardinalDirection.EAST);
+        fovMap.addWall(2, 1, WarpField.CardinalDirection.EAST);
+        fovMap.addWall(2, 2, WarpField.CardinalDirection.EAST);
+        fovMap.addWall(2, 3, WarpField.CardinalDirection.EAST);
+        fovMap.addWall(5, 1, WarpField.CardinalDirection.SOUTH);
+        fovMap.addWall(6, 3, WarpField.CardinalDirection.NORTH);
+        fovMap.addWall(7, 3, WarpField.CardinalDirection.NORTH);
+        fovMap.addWall(4, 4, WarpField.CardinalDirection.WEST);
+        fovMap.addWall(5, 5, WarpField.CardinalDirection.EAST);
+        fovMap.addWall(3, 6, WarpField.CardinalDirection.NORTH);
+        fovMap.addWall(3, 6, WarpField.CardinalDirection.EAST);
+        fovMap.addWall(4, 8, WarpField.CardinalDirection.WEST);
+        fovMap.addWall(4, 8, WarpField.CardinalDirection.SOUTH);
         const fov = fovMap.getFieldOfView(5, 5, 5);
         assert.strictEqual(fov.toString(), `(0,0)
 ...--.-....
@@ -412,11 +412,11 @@ describe('field-of-view', () => {
     });
     it('gets example 4 right', () => {
         const fovMap = new WarpField.FieldOfViewMap('A', 11, 11);
-        fovMap.addWall(2, 2, geom.Direction.EAST);
-        fovMap.addWall(7, 3, geom.Direction.WEST);
-        fovMap.addWall(6, 4, geom.Direction.EAST);
-        fovMap.addWall(6, 6, geom.Direction.EAST);
-        fovMap.addWall(4, 6, geom.Direction.WEST);
+        fovMap.addWall(2, 2, WarpField.CardinalDirection.EAST);
+        fovMap.addWall(7, 3, WarpField.CardinalDirection.WEST);
+        fovMap.addWall(6, 4, WarpField.CardinalDirection.EAST);
+        fovMap.addWall(6, 6, WarpField.CardinalDirection.EAST);
+        fovMap.addWall(4, 6, WarpField.CardinalDirection.WEST);
         fovMap.addBody(4, 3);
         fovMap.addBody(3, 4);
         fovMap.addBody(6, 3);
@@ -445,16 +445,16 @@ describe('field-of-view', () => {
         const fovMap4 = new WarpField.FieldOfViewMap('4', 11, 11);
         const fovMap5 = new WarpField.FieldOfViewMap('5', 11, 11);
         const fovMap6 = new WarpField.FieldOfViewMap('6', 11, 11);
-        fovMap.addWarp(4, 4, geom.Direction.NORTH, fovMap1, 4, 3);
-        fovMap.addWarp(5, 4, geom.Direction.NORTH, fovMap1, 5, 3);
-        fovMap.addWarp(5, 5, geom.Direction.EAST, fovMap2, 6, 5);
-        fovMap.addWarp(2, 5, geom.Direction.EAST, fovMap2, 3, 5);
-        fovMap.addWarp(2, 5, geom.Direction.WEST, fovMap3, 1, 5);
-        fovMap.addWarp(3, 7, geom.Direction.WEST, fovMap4, 2, 7);
-        fovMap2.addWarp(7, 4, geom.Direction.EAST, fovMap5, 8, 4);
-        fovMap2.addWarp(7, 5, geom.Direction.EAST, fovMap5, 8, 5);
-        fovMap.addWarp(3, 7, geom.Direction.SOUTH, fovMap6, 3, 8);
-        fovMap.addWarp(6, 9, geom.Direction.NORTH, fovMap6, 6, 8);
+        fovMap.addWarp(4, 4, WarpField.CardinalDirection.NORTH, fovMap1, 4, 3);
+        fovMap.addWarp(5, 4, WarpField.CardinalDirection.NORTH, fovMap1, 5, 3);
+        fovMap.addWarp(5, 5, WarpField.CardinalDirection.EAST, fovMap2, 6, 5);
+        fovMap.addWarp(2, 5, WarpField.CardinalDirection.EAST, fovMap2, 3, 5);
+        fovMap.addWarp(2, 5, WarpField.CardinalDirection.WEST, fovMap3, 1, 5);
+        fovMap.addWarp(3, 7, WarpField.CardinalDirection.WEST, fovMap4, 2, 7);
+        fovMap2.addWarp(7, 4, WarpField.CardinalDirection.EAST, fovMap5, 8, 4);
+        fovMap2.addWarp(7, 5, WarpField.CardinalDirection.EAST, fovMap5, 8, 5);
+        fovMap.addWarp(3, 7, WarpField.CardinalDirection.SOUTH, fovMap6, 3, 8);
+        fovMap.addWarp(6, 9, WarpField.CardinalDirection.NORTH, fovMap6, 6, 8);
         const fov = fovMap.getFieldOfView(5, 5, 5);
         assert.strictEqual(fov.toString(), `(0,0)
 -111111----
@@ -469,21 +469,21 @@ describe('field-of-view', () => {
 446-------2
 46---------
 `);
-   });
+    });
     it('gets example 6 right', () => {
         const fovMap = new WarpField.FieldOfViewMap('A', 11, 11);
         const fovMap1 = new WarpField.FieldOfViewMap('1', 11, 11);
-        fovMap.addWarp(5, 4, WarpField.Direction.NORTH, fovMap1, 5, 3);
-        fovMap.addWall(4, 3, WarpField.Direction.NORTH);
-        fovMap1.addWall(6, 3, WarpField.Direction.NORTH);
-        fovMap.addWarp(6, 5, WarpField.Direction.EAST, fovMap1, 7, 5);
-        fovMap.addWarp(6, 6, WarpField.Direction.EAST, fovMap1, 7, 6);
+        fovMap.addWarp(5, 4, WarpField.CardinalDirection.NORTH, fovMap1, 5, 3);
+        fovMap.addWall(4, 3, WarpField.CardinalDirection.NORTH);
+        fovMap1.addWall(6, 3, WarpField.CardinalDirection.NORTH);
+        fovMap.addWarp(6, 5, WarpField.CardinalDirection.EAST, fovMap1, 7, 5);
+        fovMap.addWarp(6, 6, WarpField.CardinalDirection.EAST, fovMap1, 7, 6);
         fovMap.addBody(7, 7);
         fovMap1.addBody(8, 4);
-        fovMap.addWarp(4, 5, WarpField.Direction.WEST, fovMap1, 3, 5);
-        fovMap.addWarp(4, 6, WarpField.Direction.WEST, fovMap1, 3, 6);
-        fovMap.addWall(4, 4, WarpField.Direction.WEST);
-        fovMap.addWall(4, 6, WarpField.Direction.SOUTH);
+        fovMap.addWarp(4, 5, WarpField.CardinalDirection.WEST, fovMap1, 3, 5);
+        fovMap.addWarp(4, 6, WarpField.CardinalDirection.WEST, fovMap1, 3, 6);
+        fovMap.addWall(4, 4, WarpField.CardinalDirection.WEST);
+        fovMap.addWall(4, 6, WarpField.CardinalDirection.SOUTH);
         const fov = fovMap.getFieldOfView(5, 5, 5);
         assert.strictEqual(fov.toString(), `(0,0)
 ---1111----
@@ -498,27 +498,27 @@ describe('field-of-view', () => {
 11..-----11
 1..------11
 `);
-   });
+    });
     it('gets example 7 right', () => {
         const fovMap = new WarpField.FieldOfViewMap('A', 11, 11);
         const fovMap1 = new WarpField.FieldOfViewMap('1', 11, 11);
         const fovMap2 = new WarpField.FieldOfViewMap('2', 11, 11);
         const fovMap3 = new WarpField.FieldOfViewMap('3', 11, 11);
-        fovMap.addWarp(5, 4, WarpField.Direction.NORTH, fovMap1, 5, 3);
-        fovMap.addWarp(4, 3, WarpField.Direction.NORTH, fovMap2, 4, 2);
-        fovMap1.addWarp(6, 3, WarpField.Direction.NORTH, fovMap3, 6, 2);
-        fovMap.addWarp(6, 6, WarpField.Direction.EAST, fovMap1, 7, 6);
-        fovMap.addWarp(6, 7, WarpField.Direction.EAST, fovMap1, 7, 7);
-        fovMap.addWarp(7, 6, WarpField.Direction.EAST, fovMap2, 8, 6);
-        fovMap.addWarp(7, 7, WarpField.Direction.EAST, fovMap2, 8, 7);
-        fovMap.addWarp(8, 6, WarpField.Direction.EAST, fovMap3, 9, 6);
-        fovMap.addWarp(8, 7, WarpField.Direction.EAST, fovMap3, 9, 7);
-        fovMap.addWarp(4, 6, WarpField.Direction.WEST, fovMap1, 3, 6);
-        fovMap.addWarp(4, 7, WarpField.Direction.WEST, fovMap1, 3, 7);
-        fovMap1.addWarp(3, 6, WarpField.Direction.WEST, fovMap2, 2, 6);
-        fovMap1.addWarp(3, 7, WarpField.Direction.WEST, fovMap2, 2, 7);
-        fovMap2.addWarp(2, 6, WarpField.Direction.WEST, fovMap3, 1, 6);
-        fovMap2.addWarp(2, 7, WarpField.Direction.WEST, fovMap3, 1, 7);
+        fovMap.addWarp(5, 4, WarpField.CardinalDirection.NORTH, fovMap1, 5, 3);
+        fovMap.addWarp(4, 3, WarpField.CardinalDirection.NORTH, fovMap2, 4, 2);
+        fovMap1.addWarp(6, 3, WarpField.CardinalDirection.NORTH, fovMap3, 6, 2);
+        fovMap.addWarp(6, 6, WarpField.CardinalDirection.EAST, fovMap1, 7, 6);
+        fovMap.addWarp(6, 7, WarpField.CardinalDirection.EAST, fovMap1, 7, 7);
+        fovMap.addWarp(7, 6, WarpField.CardinalDirection.EAST, fovMap2, 8, 6);
+        fovMap.addWarp(7, 7, WarpField.CardinalDirection.EAST, fovMap2, 8, 7);
+        fovMap.addWarp(8, 6, WarpField.CardinalDirection.EAST, fovMap3, 9, 6);
+        fovMap.addWarp(8, 7, WarpField.CardinalDirection.EAST, fovMap3, 9, 7);
+        fovMap.addWarp(4, 6, WarpField.CardinalDirection.WEST, fovMap1, 3, 6);
+        fovMap.addWarp(4, 7, WarpField.CardinalDirection.WEST, fovMap1, 3, 7);
+        fovMap1.addWarp(3, 6, WarpField.CardinalDirection.WEST, fovMap2, 2, 6);
+        fovMap1.addWarp(3, 7, WarpField.CardinalDirection.WEST, fovMap2, 2, 7);
+        fovMap2.addWarp(2, 6, WarpField.CardinalDirection.WEST, fovMap3, 1, 6);
+        fovMap2.addWarp(2, 7, WarpField.CardinalDirection.WEST, fovMap3, 1, 7);
         const fov = fovMap.getFieldOfView(5, 5, 5);
         assert.strictEqual(fov.toString(), `(0,0)
 ---2111----
@@ -533,30 +533,30 @@ describe('field-of-view', () => {
 211-----111
 11-------11
 `);
-   });
+    });
     it('gets the stairs example right', () => {
         const fovMap = new WarpField.FieldOfViewMap('A', 7, 6);
         const fovMap1 = new WarpField.FieldOfViewMap('1', 7, 6);
         for (let y = 1; y <= 4; y ++) {
-            fovMap.addWall(1, y, WarpField.Direction.WEST);
-            fovMap.addWall(5, y, WarpField.Direction.EAST);
-            fovMap1.addWall(1, y, WarpField.Direction.WEST);
-            fovMap1.addWall(5, y, WarpField.Direction.EAST);
+            fovMap.addWall(1, y, WarpField.CardinalDirection.WEST);
+            fovMap.addWall(5, y, WarpField.CardinalDirection.EAST);
+            fovMap1.addWall(1, y, WarpField.CardinalDirection.WEST);
+            fovMap1.addWall(5, y, WarpField.CardinalDirection.EAST);
         }
         for (let x = 1; x <= 5; x ++) {
-            fovMap.addWall(x, 1, WarpField.Direction.NORTH);
-            fovMap.addWall(x, 4, WarpField.Direction.SOUTH);
-            fovMap1.addWall(x, 1, WarpField.Direction.NORTH);
-            fovMap1.addWall(x, 4, WarpField.Direction.SOUTH);
+            fovMap.addWall(x, 1, WarpField.CardinalDirection.NORTH);
+            fovMap.addWall(x, 4, WarpField.CardinalDirection.SOUTH);
+            fovMap1.addWall(x, 1, WarpField.CardinalDirection.NORTH);
+            fovMap1.addWall(x, 4, WarpField.CardinalDirection.SOUTH);
         }
-        fovMap.addWall(2, 4, WarpField.Direction.NORTH);
-        fovMap.addWall(3, 4, WarpField.Direction.NORTH);
-        fovMap.addWall(3, 4, WarpField.Direction.EAST);
-        fovMap1.addWall(2, 4, WarpField.Direction.WEST);
-        fovMap1.addWall(2, 4, WarpField.Direction.NORTH);
-        fovMap1.addWall(3, 4, WarpField.Direction.NORTH);
-        fovMap.addWarp(2, 4, WarpField.Direction.EAST, fovMap1, 3, 4);
-        fovMap1.addWarp(3, 4, WarpField.Direction.WEST, fovMap, 2, 4);
+        fovMap.addWall(2, 4, WarpField.CardinalDirection.NORTH);
+        fovMap.addWall(3, 4, WarpField.CardinalDirection.NORTH);
+        fovMap.addWall(3, 4, WarpField.CardinalDirection.EAST);
+        fovMap1.addWall(2, 4, WarpField.CardinalDirection.WEST);
+        fovMap1.addWall(2, 4, WarpField.CardinalDirection.NORTH);
+        fovMap1.addWall(3, 4, WarpField.CardinalDirection.NORTH);
+        fovMap.addWarp(2, 4, WarpField.CardinalDirection.EAST, fovMap1, 3, 4);
+        fovMap1.addWarp(3, 4, WarpField.CardinalDirection.WEST, fovMap, 2, 4);
         const fov1 = fovMap.getFieldOfView(5, 2, 5);
         assert.strictEqual(fov1.toString(), `(0,-3)
 ...........
@@ -613,18 +613,18 @@ describe('field-of-view', () => {
 ...........
 ...........
 `);
-   });
+    });
     it('gets the tunnel example right', () => {
         const fovMap = new WarpField.FieldOfViewMap('A', 7, 5, true);
         const fovMap1 = new WarpField.FieldOfViewMap('1', 7, 5, true);
-        fovMap.addWall(3, 2, WarpField.Direction.NORTH);
-        fovMap.addWall(2, 2, WarpField.Direction.EAST, true);
-        fovMap.addWall(3, 2, WarpField.Direction.SOUTH);
-        fovMap.addWarp(3, 2, WarpField.Direction.WEST, fovMap1, 2, 2);
-        fovMap1.addWarp(2, 2, WarpField.Direction.EAST, fovMap, 3, 2);
+        fovMap.addWall(3, 2, WarpField.CardinalDirection.NORTH);
+        fovMap.addWall(2, 2, WarpField.CardinalDirection.EAST, true);
+        fovMap.addWall(3, 2, WarpField.CardinalDirection.SOUTH);
+        fovMap.addWarp(3, 2, WarpField.CardinalDirection.WEST, fovMap1, 2, 2);
+        fovMap1.addWarp(2, 2, WarpField.CardinalDirection.EAST, fovMap, 3, 2);
         for (let x = 0; x <= 3; x ++) {
-            fovMap1.addWall(x, 2, WarpField.Direction.NORTH);
-            fovMap1.addWall(x, 2, WarpField.Direction.SOUTH);
+            fovMap1.addWall(x, 2, WarpField.CardinalDirection.NORTH);
+            fovMap1.addWall(x, 2, WarpField.CardinalDirection.SOUTH);
         }
         const fov1 = fovMap.getFieldOfView(1, 2, 5);
         assert.strictEqual(fov1.toString(), `(-4,-3)
@@ -682,7 +682,7 @@ describe('field-of-view', () => {
 ...........
 ...........
 `);
-   });
+    });
     it('works with offset out of bounds', () => {
         const fovMap = new WarpField.FieldOfViewMap('A', 7, 7);
         const fov = fovMap.getFieldOfView(10, 10, 2);
@@ -693,7 +693,7 @@ describe('field-of-view', () => {
 .....
 .....
 `);
-   });
+    });
     it('works with negative offsets', () => {
         const fovMap = new WarpField.FieldOfViewMap('A', 7, 7);
         const fov = fovMap.getFieldOfView(-2, -2, 2);
@@ -704,12 +704,12 @@ describe('field-of-view', () => {
 .....
 .....
 `);
-   });
+    });
     it('covers wallX/warpY case', () => {
         const fovMap1 = new WarpField.FieldOfViewMap('A', 5, 5);
         const fovMap2 = new WarpField.FieldOfViewMap('B', 5, 5);
-        fovMap1.addWall(3, 3, geom.Direction.EAST);
-        fovMap1.addWarp(3, 3, geom.Direction.SOUTH, fovMap2, 2, 1);
+        fovMap1.addWall(3, 3, WarpField.CardinalDirection.EAST);
+        fovMap1.addWarp(3, 3, WarpField.CardinalDirection.SOUTH, fovMap2, 2, 1);
         const fov = fovMap1.getFieldOfView(2, 2, 2);
         assert.strictEqual(fov.toString(), `(0,0)
 -----

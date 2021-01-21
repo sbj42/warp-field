@@ -1,4 +1,4 @@
-import * as geom from './geom';
+import * as geom from 'tiled-geometry';
 import {
     TileFlag,
     Warp,
@@ -12,7 +12,7 @@ import {
 } from './fov-util';
 import {WarpRect} from '.';
 
-// tslint:disable:no-bitwise
+/* eslint-disable indent */
 
 /**
  * We avoid heap allocations during the core part of the algorithm by using this
@@ -39,29 +39,29 @@ export class FieldOfViewMap {
         this._tileFlags = new Array<number>(this._size.area).fill(0);
         if (addEdgeWalls) {
             for (let y = 0; y < this._size.height; y ++) {
-                this._addFlag(LOCAL_OFF.set(0, y), TileFlag.WALL_WEST);
-                this._addFlag(LOCAL_OFF.set(this._size.width - 1, y), TileFlag.WALL_EAST);
+                this._addFlag(0, y, TileFlag.WALL_WEST);
+                this._addFlag(this._size.width - 1, y, TileFlag.WALL_EAST);
             }
             for (let x = 0; x < this._size.width; x ++) {
-                this._addFlag(LOCAL_OFF.set(x, 0), TileFlag.WALL_NORTH);
-                this._addFlag(LOCAL_OFF.set(x, this._size.height - 1), TileFlag.WALL_SOUTH);
+                this._addFlag(x, 0, TileFlag.WALL_NORTH);
+                this._addFlag(x, this._size.height - 1, TileFlag.WALL_SOUTH);
             }
         }
-        this._tileWarpIds = geom.DIRECTIONS.map(() => new Array<number>(this._size.area).fill(-1));
+        this._tileWarpIds = geom.CARDINAL_DIRECTIONS.map(() => new Array<number>(this._size.area).fill(-1));
     }
 
-    private _addFlag(off: geom.OffsetLike, flag: TileFlag) {
-        const index = this._size.index(off);
+    private _addFlag(x: number, y: number, flag: TileFlag) {
+        const index = this._size.index(x, y);
         this._tileFlags[index] |= flag;
     }
 
-    private _removeFlag(off: geom.OffsetLike, flag: TileFlag) {
-        const index = this._size.index(off);
+    private _removeFlag(x: number, y: number, flag: TileFlag) {
+        const index = this._size.index(x, y);
         this._tileFlags[index] &= ~flag;
     }
 
-    private _getFlag(off: geom.OffsetLike, flag: TileFlag) {
-        const index = this._size.index(off);
+    private _getFlag(x: number, y: number, flag: TileFlag) {
+        const index = this._size.index(x, y);
         return (this._tileFlags[index] & flag) !== 0;
     }
 
@@ -81,18 +81,18 @@ export class FieldOfViewMap {
         return id;
     }
 
-    private _addWarp(off: geom.OffsetLike, dir: geom.Direction, warpId: number) {
-        const index = this._size.index(off);
+    private _addWarp(x: number, y: number, dir: geom.CardinalDirection, warpId: number) {
+        const index = this._size.index(x, y);
         this._tileWarpIds[dir][index] = warpId;
     }
 
-    private _removeWarp(off: geom.OffsetLike, dir: geom.Direction) {
-        const index = this._size.index(off);
+    private _removeWarp(x: number, y: number, dir: geom.CardinalDirection) {
+        const index = this._size.index(x, y);
         delete this._tileWarpIds[dir][index];
     }
 
-    private _getWarp(off: geom.OffsetLike, dir: geom.Direction) {
-        const index = this._size.index(off);
+    private _getWarp(x: number, y: number, dir: geom.CardinalDirection) {
+        const index = this._size.index(x, y);
         const warpId = this._tileWarpIds[dir][index];
         if (warpId === -1) {
             return undefined;
@@ -107,84 +107,83 @@ export class FieldOfViewMap {
      * Adds a wall at a particular edge.  This automatically adds the
      * corresponding wall on the other side.
      */
-    addWall(x: number, y: number, dir: geom.Direction, oneWay = false) {
+    addWall(x: number, y: number, dir: geom.CardinalDirection, oneWay = false): this {
+        this._addFlag(x, y, 1 << dir);
         LOCAL_OFF.set(x, y);
-        this._addFlag(LOCAL_OFF, 1 << dir);
         LOCAL_OFF.addCardinalDirection(dir);
         if (!oneWay && this._size.containsOffset(LOCAL_OFF)) {
-            this._addFlag(LOCAL_OFF, 1 << geom.directionOpposite(dir));
+            this._addFlag(LOCAL_OFF.x, LOCAL_OFF.y, 1 << geom.cardinalDirectionOpposite(dir));
         }
+        return this;
     }
 
     /**
      * Removes a wall at a particular edge.  This automatically removes the
      * corresponding wall on the other side.
      */
-    removeWall(x: number, y: number, dir: geom.Direction, oneWay = false) {
+    removeWall(x: number, y: number, dir: geom.CardinalDirection, oneWay = false): this {
+        this._removeFlag(x, y, 1 << dir);
         LOCAL_OFF.set(x, y);
-        this._removeFlag(LOCAL_OFF, 1 << dir);
         LOCAL_OFF.addCardinalDirection(dir);
         if (!oneWay && this._size.containsOffset(LOCAL_OFF)) {
-            this._removeFlag(LOCAL_OFF, 1 << geom.directionOpposite(dir));
+            this._removeFlag(LOCAL_OFF.x, LOCAL_OFF.y, 1 << geom.cardinalDirectionOpposite(dir));
         }
+        return this;
     }
 
-    getWalls(x: number, y: number) {
-        LOCAL_OFF.set(x, y);
-        const index = this._size.index(LOCAL_OFF);
-        return this._tileFlags[index] & geom.DirectionFlags.ALL;
+    getWalls(x: number, y: number): geom.CardinalDirectionFlags {
+        const index = this._size.index(x, y);
+        return this._tileFlags[index] & geom.CardinalDirectionFlags.ALL;
     }
 
-    getWall(x: number, y: number, dir: geom.Direction) {
+    getWall(x: number, y: number, dir: geom.CardinalDirection): boolean {
         return (this.getWalls(x, y) & (1 << dir)) !== 0;
     }
 
-    addBody(x: number, y: number) {
-        LOCAL_OFF.set(x, y);
-        this._addFlag(LOCAL_OFF, TileFlag.BODY);
+    addBody(x: number, y: number): this {
+        this._addFlag(x, y, TileFlag.BODY);
+        return this;
     }
 
-    removeBody(x: number, y: number) {
-        LOCAL_OFF.set(x, y);
-        this._removeFlag(LOCAL_OFF, TileFlag.BODY);
+    removeBody(x: number, y: number): this {
+        this._removeFlag(x, y, TileFlag.BODY);
+        return this;
     }
 
-    getBody(x: number, y: number) {
-        LOCAL_OFF.set(x, y);
-        const index = this._size.index(LOCAL_OFF);
+    getBody(x: number, y: number): boolean {
+        const index = this._size.index(x, y);
         return (this._tileFlags[index] & TileFlag.BODY) !== 0;
     }
 
     // TODO add length argument
-    addWarp(sourceX: number, sourceY: number, dir: geom.Direction,
-            targetMap: FieldOfViewMap, targetX: number, targetY: number) {
+    addWarp(sourceX: number, sourceY: number, dir: geom.CardinalDirection,
+            targetMap: FieldOfViewMap, targetX: number, targetY: number): this {
         LOCAL_OFF.set(targetX - sourceX, targetY - sourceY)
-                .addCardinalDirection(geom.directionOpposite(dir));
+            .addCardinalDirection(geom.cardinalDirectionOpposite(dir));
         const warpId = this._findOrMakeWarp(targetMap, LOCAL_OFF);
         LOCAL_OFF.set(sourceX, sourceY);
-        this._addWarp(LOCAL_OFF, dir, warpId);
+        this._addWarp(LOCAL_OFF.x, LOCAL_OFF.y, dir, warpId);
+        return this;
     }
 
     // TODO add length argument
-    removeWarp(sourceX: number, sourceY: number, dir: geom.Direction) {
-        LOCAL_OFF.set(sourceX, sourceY);
-        this._removeWarp(LOCAL_OFF, dir);
+    removeWarp(sourceX: number, sourceY: number, dir: geom.CardinalDirection): this {
+        this._removeWarp(sourceX, sourceY, dir);
+        return this;
     }
 
-    getWarpFlags(sourceX: number, sourceY: number) {
-        LOCAL_OFF.set(sourceX, sourceY);
-        let ret = 0;
-        geom.DIRECTIONS.forEach((dir) => {
-            if (this._getWarp(LOCAL_OFF, dir)) {
-                ret |= 1 << dir;
+    getWarpFlags(sourceX: number, sourceY: number): geom.CardinalDirectionFlags {
+        let ret: geom.CardinalDirectionFlags = geom.CardinalDirectionFlags.NONE;
+        geom.CARDINAL_DIRECTIONS.forEach((dir) => {
+            if (this._getWarp(sourceX, sourceY, dir)) {
+                ret = geom.cardinalDirectionFlagsSetCardinalDirection(ret, dir);
             }
         });
         return ret;
     }
 
-    getWarpFlag(sourceX: number, sourceY: number, dir: geom.Direction) {
-        LOCAL_OFF.set(sourceX, sourceY);
-        return this._getWarp(LOCAL_OFF, dir) != null;
+    getWarpFlag(sourceX: number, sourceY: number, dir: geom.CardinalDirection): boolean {
+        return !!this._getWarp(sourceX, sourceY, dir);
     }
 
     // execution
@@ -201,7 +200,7 @@ export class FieldOfViewMap {
      * the map for that tile, and warpRect.getOffset(x, y) will return the
      * location in that map which is visible there.
      */
-    getFieldOfView(x: number, y: number, chebyshevRadius: number) {
+    getFieldOfView(x: number, y: number, chebyshevRadius: number): WarpRect {
         const origin = new geom.Offset(x, y);
         const boundRect = new geom.Rectangle().set(
             origin.x - chebyshevRadius, origin.y - chebyshevRadius,
@@ -219,7 +218,7 @@ export class FieldOfViewMap {
     }
 
     private _quadrant(mask: WarpRect, origin: geom.OffsetLike, chebyshevRadius: number,
-                      xDir: number, yDir: number) {
+                      xDir: number, yDir: number): void {
         const {x: startX, y: startY} = origin;
         const endDXY = (chebyshevRadius + 1);
         if (endDXY < 0 || !this._size.containsOffset(origin)) {
@@ -227,11 +226,11 @@ export class FieldOfViewMap {
         }
         const farYFlag = [TileFlag.WALL_NORTH, TileFlag.WALL_SOUTH][(yDir + 1) / 2];
         const farXFlag = [TileFlag.WALL_WEST, TileFlag.WALL_EAST][(xDir + 1) / 2];
-        const yWarpDir = [geom.Direction.NORTH, geom.Direction.SOUTH][(yDir + 1) / 2];
+        const yWarpDir = [geom.CardinalDirection.NORTH, geom.CardinalDirection.SOUTH][(yDir + 1) / 2];
         const yWarps = this._tileWarpIds[yWarpDir];
-        const xWarpDir = [geom.Direction.WEST, geom.Direction.EAST][(xDir + 1) / 2];
+        const xWarpDir = [geom.CardinalDirection.WEST, geom.CardinalDirection.EAST][(xDir + 1) / 2];
         const xWarps = this._tileWarpIds[xWarpDir];
-        const startMapIndex = this._size.index(origin);
+        const startMapIndex = this._size.index(origin.x, origin.y);
         const startMaskIndex = mask.index(origin.x, origin.y);
         // Initial wedge is from slope zero to slope infinity (i.e. the whole quadrant)
         const wedges = [{
@@ -307,7 +306,7 @@ export class FieldOfViewMap {
 
                 {
                     const centerWedge = whichWedge(wedges, wedgeIndex, slopeMid);
-                    mask.setAt(maskIndex, true, wedges[centerWedge].warp);
+                    mask.setAtIndex(maskIndex, true, wedges[centerWedge].warp);
                 }
 
                 {
@@ -318,8 +317,8 @@ export class FieldOfViewMap {
                         let wallY: boolean;
                         let wallX: boolean;
                         let body: boolean;
-                        let warpY: Warp;
-                        let warpX: Warp;
+                        let warpY: Warp | undefined;
+                        let warpX: Warp | undefined;
                         const nextWarpCount = wedges[wedgeIndexInner].warpCount + 1;
 
                         if (typeof warp === 'undefined') {
@@ -331,11 +330,11 @@ export class FieldOfViewMap {
                         } else {
                             const {map, offset} = warp;
                             LOCAL_OFF.copyFrom(offset).add(startX + dx * xDir, startY + dy * yDir);
-                            wallY = map._getFlag(LOCAL_OFF, farYFlag);
-                            wallX = map._getFlag(LOCAL_OFF, farXFlag);
-                            body = (dx !== 0 || dy !== 0) && map._getFlag(LOCAL_OFF, TileFlag.BODY);
-                            warpY = map._getWarp(LOCAL_OFF, yWarpDir);
-                            warpX = map._getWarp(LOCAL_OFF, xWarpDir);
+                            wallY = map._getFlag(LOCAL_OFF.x, LOCAL_OFF.y, farYFlag);
+                            wallX = map._getFlag(LOCAL_OFF.x, LOCAL_OFF.y, farXFlag);
+                            body = (dx !== 0 || dy !== 0) && map._getFlag(LOCAL_OFF.x, LOCAL_OFF.y, TileFlag.BODY);
+                            warpY = map._getWarp(LOCAL_OFF.x, LOCAL_OFF.y, yWarpDir);
+                            warpX = map._getWarp(LOCAL_OFF.x, LOCAL_OFF.y, xWarpDir);
                         }
 
                         if (wallX && wallY) {

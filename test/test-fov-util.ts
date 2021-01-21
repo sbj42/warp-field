@@ -1,6 +1,6 @@
 import * as assert from 'assert';
 
-import * as geom from '../src/geom';
+import * as geom from 'tiled-geometry';
 import * as fov from '../src/fov-util';
 import {FieldOfViewMap} from '../src';
 
@@ -10,7 +10,7 @@ function makeWarp(mapId: string): fov.Warp {
         offset: new geom.Offset(),
     };
 }
-function makeWedge(low: number, high: number, mapId?: string, warpCount: number = 0): fov.Wedge {
+function makeWedge(low: number, high: number, mapId?: string, warpCount = 0): fov.Wedge {
     return {
         low,
         high,
@@ -18,11 +18,11 @@ function makeWedge(low: number, high: number, mapId?: string, warpCount: number 
         warpCount,
     };
 }
-function checkWedge(wedge: fov.Wedge, low: number, high: number, mapId?: string, warpCount: number = 0) {
+function checkWedge(wedge: fov.Wedge, low: number, high: number, mapId?: string, warpCount = 0) {
     assert.strictEqual(wedge.low, low);
     assert.strictEqual(wedge.high, high);
     if (mapId) {
-        assert.strictEqual(wedge.warp.map.id, mapId);
+        assert.strictEqual(wedge.warp?.map.id, mapId);
         assert.strictEqual(wedge.warpCount, warpCount);
     } else {
         assert.strictEqual(wedge.warp, undefined);
