@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <link rel="icon" type="image/png" href="favicon.png" />
+        <title>WarpField</title>
+        <link href="style.css" rel="stylesheet" />
+        <link href="https://fonts.googleapis.com/css?family=Skranji|Nunito" rel="stylesheet">
+    </head>
+    <body>
+        <div id="top">
+            <div id="credit">
+                by James Clark
+            </div>
+            <h1 id="title">WarpField</h1>
+            <p id="subtitle">portal-casting field-of-view algorithm</p>
+        </div>
+        <div id="demo">
+            <canvas id="canvas" width="1184" height="608" />
+        </div>
+        <div id="desc">
+            <div id="link">
+                <a href="https://github.com/sbj42/warp-field">
+                    Check it out at github
+                </a>
+            </div>
+            <h2>WarpField</h2>
+            <p>
+                WarpField is a grid-based field-of-view algorithm for roguelike games.  It computes which cells are visible
+                from a particular cell, using a technique called <a href="http://www.roguebasin.com/index.php?title=Shadow_casting">shadow casting</a>.
+                WarpField supports portals, linking one map to another, which allows:
+                <ul>
+                    <li>Continuous overworld movement from zone to zone
+                    <li>Over/under pathways, such as bridges and tunnels
+                    <li>Smooth transitions of elevation changes, like stairs
+                </ul>
+            </p>
+        </div>
+
+        <script src="build/demo.js">
+        </script>
+    </body>
+</html>    
