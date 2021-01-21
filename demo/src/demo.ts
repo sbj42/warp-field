@@ -379,6 +379,48 @@ interface MoveOption {
     score: number,
 }
 
+let auto = true;
+window.addEventListener('keydown', (event) => {
+    if (event.key === 'ArrowUp' || event.key === 'ArrowDown' || event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
+        const fov = maps[pmap].getFieldOfView(px, py, 15);
+        let nx = px;
+        let ny = py;
+        let dir: WarpField.CardinalDirection;
+        switch (event.key) {
+            case 'ArrowUp':
+                dir = WarpField.CardinalDirection.NORTH;
+                ny --;
+                break;
+            case 'ArrowDown':
+                dir = WarpField.CardinalDirection.SOUTH;
+                ny ++;
+                break;
+            case 'ArrowLeft':
+                dir = WarpField.CardinalDirection.WEST;
+                nx --;
+                break;
+            case 'ArrowRight':
+                dir = WarpField.CardinalDirection.EAST;
+                nx ++;
+                break;
+        }
+        if (nx >= 0 && ny >= 0 && nx < width && ny < height && !maps[pmap].getWall(px, py, dir) && !maps[pmap].getBody(nx, ny)) {
+            const map = fov.getMap(nx, ny);
+            if (map) {
+                pmap = parseInt(map.id);
+            }
+            if (pmap !== 2 || !lava[ny][nx]) {
+                px = nx;
+                py = ny;
+            }
+            requestAnimationFrame(render);
+        }
+        event.preventDefault();
+        auto = false;
+        document.getElementById('takeover')?.remove();
+    }
+});
+
 const imageXOff: {[id: string]: number} = {
     'floor1': 0,
     'floor2': 1,
@@ -411,6 +453,9 @@ tiles.onload = function() {
 
     function step() {
 
+        if (!auto) {
+            return;
+        }
         const fov = render();
 
         if (!path) {
