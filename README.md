@@ -54,21 +54,22 @@ Compute the field of view:
 const playerX = 2;
 const playerY = 2;
 const visionRadius = 2;
-const fov = fovMap.getFieldOfView(playerX, playerY, visionRadius);
+const fov = WarpField.computeFieldOfView(fovMap, playerX, playerY, visionRadius);
 ```
 
 See which tiles are visible:
 ```js
-fov.get(4, 2); // -> true
-fov.get(3, 1); // -> false
+// NOTE: coordinates are relative to the player
+fov.get(2, 0); // -> true
+fov.get(1, -1); // -> false
 ```
 
 Locate each visible tile:
 ```js
-fov.getMap(3, 2); // -> map1
-fov.getOffset(3, 2); // -> {x: 3, y: 2}
-fov.getMap(4, 2); // -> map2
-fov.getOffset(4, 2); // -> {x: 1, y: 2}
+fov.getTargetMap(1, -1); // -> map1
+fov.getTargetOffset(1, -1); // -> {x: 3, y: 2}
+fov.getTargetMap(2, 0); // -> map2
+fov.getTargetOffset(2, 0); // -> {x: 1, y: 2}
 ```
 
 ## Details

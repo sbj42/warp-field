@@ -243,23 +243,15 @@ function drawImage(image: string, map: number, x: number, y: number) {
 function render() {
     context.fillStyle = '#666';
     context.fillRect(0, 0, width * 32, height * 32);
-    const fov = maps[pmap].getFieldOfView(px, py, 15);
+    const fov = WarpField.computeFieldOfView(maps[pmap], px, py, 15);
     for (let y = 0; y < height; y ++) {
         for (let x = 0; x < width; x ++) {
-            if (!fov.getMask(x, y)) {
+            const dx = x - px;
+            const dy = y - py;
+            if (!fov.getVisible(dx, dy)) {
                 // nothing
             } else {
-                let map = fov.getMap(x, y);
-                let mx = x, my = y;
-                if (!map) {
-                    map = maps[pmap];
-                } else {
-                    const offset = fov.getOffset(x, y);
-                    if (offset) {
-                        mx = x + offset.x;
-                        my = y + offset.y;
-                    }
-                }
+                const map = fov.getTargetMap(dx, dy);
                 const mapId = parseInt(map.id);
                 if (mapId === 0) {
                     context.fillStyle = '#aaf';
@@ -268,32 +260,25 @@ function render() {
                 } else {
                     context.fillStyle = '#faa';
                 }
-                context.fillRect(mx * 32, my * 32, 32, 32);
-                drawImage('floor' + Math.floor(1 + tileRand[index(mx, my)] * 6), mapId, mx, my);
+                context.fillRect(x * 32, y * 32, 32, 32);
+                drawImage('floor' + Math.floor(1 + tileRand[index(x, y)] * 6), mapId, x, y);
             }
         }
     }
     for (let y = 0; y < height; y ++) {
         for (let x = 0; x < width; x ++) {
-            if (!fov.getMask(x, y)) {
+            const dx = x - px;
+            const dy = y - py;
+            if (!fov.getVisible(dx, dy)) {
                 // nothing
             } else {
-                let map = fov.getMap(x, y);
-                let mx = x, my = y;
-                if (!map) {
-                    map = maps[pmap];
-                } else {
-                    const offset = fov.getOffset(x, y);
-                    if (offset) {
-                        mx = x + offset.x;
-                        my = y + offset.y;
-                    }
-                }
+                const map = fov.getTargetMap(dx, dy);
+                const offset = fov.getTargetOffset(dx, dy);
                 const mapId = parseInt(map.id);
-                if (map.getBody(mx, my)) {
+                if (map.getBody(offset.x, offset.y)) {
                     drawImage('box' + Math.floor(1 + tileRand[index(x, y)] * 3), mapId, x, y);
                 }
-                if (mapId === 2 && lava[my][mx]) {
+                if (mapId === 2 && lava[offset.y][offset.x]) {
                     drawImage('box' + Math.floor(1 + tileRand[index(x, y)] * 3), mapId, x, y);
                 }
             }
@@ -301,23 +286,16 @@ function render() {
     }
     for (let y = 0; y < height; y ++) {
         for (let x = 0; x < width; x ++) {
-            if (!fov.getMask(x, y)) {
+            const dx = x - px;
+            const dy = y - py;
+            if (!fov.getVisible(dx, dy)) {
                 // nothing
             } else {
-                let map = fov.getMap(x, y);
-                let mx = x, my = y;
-                if (!map) {
-                    map = maps[pmap];
-                } else {
-                    const offset = fov.getOffset(x, y);
-                    if (offset) {
-                        mx = x + offset.x;
-                        my = y + offset.y;
-                    }
-                }
+                const map = fov.getTargetMap(dx, dy);
+                const offset = fov.getTargetOffset(dx, dy);
                 const mapId = parseInt(map.id);
                 {
-                    const walls = map.getWalls(mx, my);
+                    const walls = map.getWalls(offset.x, offset.y);
                     if ((walls & WarpField.CardinalDirectionFlags.NORTH) !== 0) {
                         drawImage('north', mapId, x, y);
                     }
@@ -336,23 +314,16 @@ function render() {
     }
     for (let y = 0; y < height; y ++) {
         for (let x = 0; x < width; x ++) {
-            if (!fov.getMask(x, y)) {
+            const dx = x - px;
+            const dy = y - py;
+            if (!fov.getVisible(dx, dy)) {
                 // nothing
             } else {
-                let map = fov.getMap(x, y);
-                let mx = x, my = y;
-                if (!map) {
-                    map = maps[pmap];
-                } else {
-                    const offset = fov.getOffset(x, y);
-                    if (offset) {
-                        mx = x + offset.x;
-                        my = y + offset.y;
-                    }
-                }
+                const map = fov.getTargetMap(dx, dy);
+                const offset = fov.getTargetOffset(dx, dy);
                 const mapId = parseInt(map.id);
                 {
-                    const warps = map.getWarpFlags(mx, my);
+                    const warps = map.getWarpFlags(offset.x, offset.y);
                     if ((warps & WarpField.CardinalDirectionFlags.NORTH) !== 0) {
                         drawImage('warpnorth', mapId, x, y);
                     }
@@ -382,7 +353,7 @@ interface MoveOption {
 let auto = true;
 window.addEventListener('keydown', (event) => {
     if (event.key === 'ArrowUp' || event.key === 'ArrowDown' || event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
-        const fov = maps[pmap].getFieldOfView(px, py, 15);
+        const fov = WarpField.computeFieldOfView(maps[pmap], px, py, 15);
         let nx = px;
         let ny = py;
         let dir: WarpField.CardinalDirection;
@@ -405,10 +376,10 @@ window.addEventListener('keydown', (event) => {
                 break;
         }
         if (nx >= 0 && ny >= 0 && nx < width && ny < height && !maps[pmap].getWall(px, py, dir) && !maps[pmap].getBody(nx, ny)) {
-            const map = fov.getMap(nx, ny);
-            if (map) {
-                pmap = parseInt(map.id);
-            }
+            const dx = nx - px;
+            const dy = ny - py;
+            const map = fov.getTargetMap(dx, dy);
+            pmap = parseInt(map.id);
             if (pmap !== 2 || !lava[ny][nx]) {
                 px = nx;
                 py = ny;
@@ -468,11 +439,10 @@ tiles.onload = function() {
                 const nextMapId = String((pmap + 1) % maps.length);
                 for (let i = 0; i < 100 && options.length < 20; i ++) {
                     const [, nx, ny] = randomPlace();
-                    if (fov.getMask(nx, ny)) {
-                        let nmap = fov.getMap(nx, ny);
-                        if (!nmap) {
-                            nmap = maps[pmap];
-                        }
+                    const dx = nx - px;
+                    const dy = ny - py;
+                    if (fov.getVisible(dx, dy)) {
+                        const nmap = fov.getTargetMap(dx, dy);
                         if (nmap.getBody(nx, ny)) {
                             continue;
                         }
@@ -517,11 +487,10 @@ tiles.onload = function() {
                         const row = new Array<number>();
                         grid.push(row);
                         for (let x = 0; x < width; x ++) {
-                            if (fov.getMask(x, y)) {
-                                let map = fov.getMap(x, y);
-                                if (!map) {
-                                    map = maps[pmap];
-                                }
+                            const dx = x - px;
+                            const dy = y - py;
+                            if (fov.getVisible(dx, dy)) {
+                                const map = fov.getTargetMap(dx, dy);
                                 if (map.getBody(x, y)) {
                                     row.push(1);
                                 } else {
@@ -541,11 +510,10 @@ tiles.onload = function() {
                     easystar.enableSync();
                     for (let y = 0; y < height; y ++) {
                         for (let x = 0; x < width; x ++) {
-                            if (fov.getMask(x, y)) {
-                                let map = fov.getMap(x, y);
-                                if (!map) {
-                                    map = maps[pmap];
-                                }
+                            const dx = x - px;
+                            const dy = y - py;
+                            if (fov.getVisible(dx, dy)) {
+                                const map = fov.getTargetMap(dx, dy);
                                 const walls = map.getWalls(x, y);
                                 if (walls !== 0) {
                                     const ok: EasyStar.Direction[] = [];
@@ -580,9 +548,11 @@ tiles.onload = function() {
             const part = path.shift();
             if (part) {
                 const {x, y} = part;
-                if (fov.getMask(x, y)) {
-                    const map = fov.getMap(x, y);
-                    if (map) {
+                const dx = x - px;
+                const dy = y - py;
+                if (fov.getVisible(dx, dy)) {
+                    const map = fov.getTargetMap(dx, dy);
+                    if (parseInt(map.id) !== pmap) {
                         pmap = parseInt(map.id);
                         path = undefined;
                     }

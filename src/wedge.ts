@@ -1,24 +1,5 @@
-import * as geom from 'tiled-geometry';
-import {FieldOfViewMap} from '.';
-
-// tslint:disable:no-bitwise
-
-/**
- * These flags determine whether a given tile has walls in any of the cardinal
- * directions, and whether there is a "body" in the tile.
- */
-export enum TileFlag {
-    WALL_NORTH = 1 << geom.CardinalDirection.NORTH,
-    WALL_EAST  = 1 << geom.CardinalDirection.EAST,
-    WALL_WEST  = 1 << geom.CardinalDirection.WEST,
-    WALL_SOUTH = 1 << geom.CardinalDirection.SOUTH,
-    BODY       = 1 << geom.CARDINAL_DIRECTIONS.length,
-}
-
-export interface Warp {
-    map: FieldOfViewMap;
-    offset: geom.Offset;
-}
+import * as constants from './constants';
+import { Warp } from './warp';
 
 /**
  * In the shadowcasting algorithm, each shadow is represented by a "wedge",
@@ -50,37 +31,17 @@ function wedgesToString(wedges: Wedge[]) {
     return `[${wedges.map(wedgeToString).join(', ')}]`;
 }
 
-/**
- * Bodies in this algorithm do not entirely fill their tiles.  This is
- * implemented by adjusting the angles of the shadows the bodies cast,
- * making the wedge very slightly narrower.  BODY_EPSILON represents the
- * amount of reduction on either side of the wedge.
- */
-export const BODY_EPSILON = 0.00001;
-
-/**
- * Walls do fill the entire tile edge.  With infinite precision, there would be
- * no need to adjust the shadow cast by a wall.  But we're using floating point
- * math here, which means imprecision can creep in and cause angles not to line
- * up properly.  To fix that, we widen the wedges of the shadows cast by walls.
- * We must make sure not to widen them as much as we narrow the body shadows,
- * or else they might close the gap we want between a body and a wall.
- */
-export const WALL_EPSILON = BODY_EPSILON / 4;
-
-/**
- * Warps also fill the entire tile edge.  But we don't extend warps as much as
- * walls, just in case a sliver of warp might make it past a wall on the other
- * side of the warp, at the edge of the warp range.
- */
-export const WARP_EPSILON = WALL_EPSILON / 4;
-
-const DEBUG_CUTWEDGE = false;
-
+// istanbul ignore next
 function debugLog(msg: string) {
     // eslint-disable-next-line no-console
     console.info(msg);
 }
+
+export function initWedges(): Wedge[] {
+    return [ { low: 0, high: Number.POSITIVE_INFINITY, warp: undefined, warpCount: 0 } ];
+}
+
+const DEBUG_CUTWEDGE = false;
 
 /**
  * This function cuts a range of angles out of a wedge.
@@ -223,13 +184,13 @@ export function whichWedge(wedges: Wedge[], wedgeIndex: number, centerSlope: num
     // or if they both have the same warp count, the one with the lowest map id
     let cur = wedgeIndex;
     // skip to the next wedge while it starts before before centerSlope
-    while (cur < wedges.length - 1 && wedges[cur + 1].low < centerSlope - WALL_EPSILON * 2) {
+    while (cur < wedges.length - 1 && wedges[cur + 1].low < centerSlope - constants.WALL_OUTSET * 2) {
         cur ++;
     }
-    if (cur >= wedges.length - 1 || wedges[cur].high > centerSlope + WALL_EPSILON * 2) {
+    if (cur >= wedges.length - 1 || wedges[cur].high > centerSlope + constants.WALL_OUTSET * 2) {
         // the current wedge contains centerSlope or is past it, so this is the closest
         return cur;
-    } else if (wedges[cur].high < centerSlope - WALL_EPSILON * 2) {
+    } else if (wedges[cur].high < centerSlope - constants.WALL_OUTSET * 2) {
         // the current wedge isn't very close to centerSlope
         // choose the closest one
         if (Math.abs(wedges[cur].high - centerSlope) < Math.abs(wedges[cur + 1].low - centerSlope)) {
@@ -239,7 +200,7 @@ export function whichWedge(wedges: Wedge[], wedgeIndex: number, centerSlope: num
         }
     } else {
         // the current wedge is very close to centerSlope
-        if (wedges[cur + 1].low < centerSlope + WALL_EPSILON * 2) {
+        if (wedges[cur + 1].low < centerSlope + constants.WALL_OUTSET * 2) {
             // the next wedge is very close to centerSlope too
             // compare warp counts
             if (wedges[cur].warpCount < wedges[cur + 1].warpCount) {

@@ -1,16 +1,18 @@
 import * as assert from 'assert';
 
 import * as geom from 'tiled-geometry';
-import * as fov from '../src/fov-util';
+import * as constants from '../src/constants';
 import {FieldOfViewMap} from '../src';
+import {Warp} from '../src/warp';
+import {cutWedge, cutWedges, warpWedge, warpWedges, Wedge, whichWedge} from '../src/wedge';
 
-function makeWarp(mapId: string): fov.Warp {
+function makeWarp(mapId: string): Warp {
     return {
         map: new FieldOfViewMap(mapId, 1, 1),
-        offset: new geom.Offset(),
+        offsetShift: new geom.Offset(),
     };
 }
-function makeWedge(low: number, high: number, mapId?: string, warpCount = 0): fov.Wedge {
+function makeWedge(low: number, high: number, mapId?: string, warpCount = 0): Wedge {
     return {
         low,
         high,
@@ -18,7 +20,7 @@ function makeWedge(low: number, high: number, mapId?: string, warpCount = 0): fo
         warpCount,
     };
 }
-function checkWedge(wedge: fov.Wedge, low: number, high: number, mapId?: string, warpCount = 0) {
+function checkWedge(wedge: Wedge, low: number, high: number, mapId?: string, warpCount = 0) {
     assert.strictEqual(wedge.low, low);
     assert.strictEqual(wedge.high, high);
     if (mapId) {
@@ -32,57 +34,57 @@ function checkWedge(wedge: fov.Wedge, low: number, high: number, mapId?: string,
 describe('carto/fov/fov-util', () => {
     describe('cutWedge', () => {
         it('works with cut entirely before wedge', () => {
-            const result = fov.cutWedge(makeWedge(10, 20), 5, 6);
+            const result = cutWedge(makeWedge(10, 20), 5, 6);
             assert.strictEqual(result.length, 1);
             checkWedge(result[0], 10, 20);
         });
         it('works with cut entirely after wedge', () => {
-            const result = fov.cutWedge(makeWedge(10, 20), 25, 26);
+            const result = cutWedge(makeWedge(10, 20), 25, 26);
             assert.strictEqual(result.length, 1);
             checkWedge(result[0], 10, 20);
         });
         it('works with cut entirely inside wedge', () => {
-            const result = fov.cutWedge(makeWedge(10, 20), 15, 16);
+            const result = cutWedge(makeWedge(10, 20), 15, 16);
             assert.strictEqual(result.length, 2);
             checkWedge(result[0], 10, 15);
             checkWedge(result[1], 16, 20);
         });
         it('works with cut in low part of wedge', () => {
-            const result = fov.cutWedge(makeWedge(10, 20), 5, 12);
+            const result = cutWedge(makeWedge(10, 20), 5, 12);
             assert.strictEqual(result.length, 1);
             checkWedge(result[0], 12, 20);
         });
         it('works with cut in high part of wedge', () => {
-            const result = fov.cutWedge(makeWedge(10, 20), 18, 22);
+            const result = cutWedge(makeWedge(10, 20), 18, 22);
             assert.strictEqual(result.length, 1);
             checkWedge(result[0], 10, 18);
         });
         it('works with cut exactly on wedge', () => {
-            const result = fov.cutWedge(makeWedge(10, 20), 10, 20);
+            const result = cutWedge(makeWedge(10, 20), 10, 20);
             assert.strictEqual(result.length, 0);
         });
         it('works with cut exactly on low part of wedge', () => {
-            const result = fov.cutWedge(makeWedge(10, 20), 10, 12);
+            const result = cutWedge(makeWedge(10, 20), 10, 12);
             assert.strictEqual(result.length, 1);
             checkWedge(result[0], 12, 20);
         });
         it('works with cut exactly on high part of wedge', () => {
-            const result = fov.cutWedge(makeWedge(10, 20), 18, 20);
+            const result = cutWedge(makeWedge(10, 20), 18, 20);
             assert.strictEqual(result.length, 1);
             checkWedge(result[0], 10, 18);
         });
         it('works with cut entirely around wedge', () => {
-            const result = fov.cutWedge(makeWedge(10, 20), 5, 25);
+            const result = cutWedge(makeWedge(10, 20), 5, 25);
             assert.strictEqual(result.length, 0);
         });
     });
     describe('cutWedges', () => {
         it('works on empty wedge list', () => {
-            const result = fov.cutWedges([], 0, 1);
+            const result = cutWedges([], 0, 1);
             assert.strictEqual(result.length, 0);
         });
         it('works with cut over two wedges', () => {
-            const result = fov.cutWedges([
+            const result = cutWedges([
                 makeWedge(10, 15),
                 makeWedge(16, 20),
             ], 12, 18);
@@ -91,7 +93,7 @@ describe('carto/fov/fov-util', () => {
             checkWedge(result[1], 18, 20);
         });
         it('works with cut over three wedges', () => {
-            const result = fov.cutWedges([
+            const result = cutWedges([
                 makeWedge(10, 15),
                 makeWedge(16, 20),
                 makeWedge(21, 25),
@@ -101,7 +103,7 @@ describe('carto/fov/fov-util', () => {
             checkWedge(result[1], 22, 25);
         });
         it('works with cut around one wedge and in low part of another', () => {
-            const result = fov.cutWedges([
+            const result = cutWedges([
                 makeWedge(10, 15),
                 makeWedge(16, 20),
             ], 9, 18);
@@ -109,7 +111,7 @@ describe('carto/fov/fov-util', () => {
             checkWedge(result[0], 18, 20);
         });
         it('works with cut in high part of one wedge and around another', () => {
-            const result = fov.cutWedges([
+            const result = cutWedges([
                 makeWedge(10, 15),
                 makeWedge(16, 20),
             ], 12, 22);
@@ -120,71 +122,71 @@ describe('carto/fov/fov-util', () => {
     const warpA = makeWarp('a');
     describe('warpWedge', () => {
         it('works with cut entirely before wedge', () => {
-            const result = fov.warpWedge(makeWedge(10, 20), 5, 6, warpA, 1);
+            const result = warpWedge(makeWedge(10, 20), 5, 6, warpA, 1);
             assert.strictEqual(result.length, 1);
             checkWedge(result[0], 10, 20);
         });
         it('works with cut entirely after wedge', () => {
-            const result = fov.warpWedge(makeWedge(10, 20), 25, 26, warpA, 1);
+            const result = warpWedge(makeWedge(10, 20), 25, 26, warpA, 1);
             assert.strictEqual(result.length, 1);
             checkWedge(result[0], 10, 20);
         });
         it('works with cut entirely inside wedge', () => {
-            const result = fov.warpWedge(makeWedge(10, 20), 15, 16, warpA, 1);
+            const result = warpWedge(makeWedge(10, 20), 15, 16, warpA, 1);
             assert.strictEqual(result.length, 3);
             checkWedge(result[0], 10, 15);
             checkWedge(result[1], 15, 16, 'a', 1);
             checkWedge(result[2], 16, 20);
         });
         it('works with cut in low part of wedge', () => {
-            const result = fov.warpWedge(makeWedge(10, 20), 5, 12, warpA, 1);
+            const result = warpWedge(makeWedge(10, 20), 5, 12, warpA, 1);
             assert.strictEqual(result.length, 2);
             checkWedge(result[0], 10, 12, 'a', 1);
             checkWedge(result[1], 12, 20);
         });
         it('works with cut in high part of wedge', () => {
-            const result = fov.warpWedge(makeWedge(10, 20), 18, 22, warpA, 1);
+            const result = warpWedge(makeWedge(10, 20), 18, 22, warpA, 1);
             assert.strictEqual(result.length, 2);
             checkWedge(result[0], 10, 18);
             checkWedge(result[1], 18, 20, 'a', 1);
         });
         it('works with cut exactly on wedge', () => {
-            const result = fov.warpWedge(makeWedge(10, 20), 10, 20, warpA, 1);
+            const result = warpWedge(makeWedge(10, 20), 10, 20, warpA, 1);
             assert.strictEqual(result.length, 1);
             checkWedge(result[0], 10, 20, 'a', 1);
         });
         it('works with cut exactly on low part of wedge', () => {
-            const result = fov.warpWedge(makeWedge(10, 20), 10, 12, warpA, 1);
+            const result = warpWedge(makeWedge(10, 20), 10, 12, warpA, 1);
             assert.strictEqual(result.length, 2);
             checkWedge(result[0], 10, 12, 'a', 1);
             checkWedge(result[1], 12, 20);
         });
         it('works with cut exactly on high part of wedge', () => {
-            const result = fov.warpWedge(makeWedge(10, 20), 18, 20, warpA, 1);
+            const result = warpWedge(makeWedge(10, 20), 18, 20, warpA, 1);
             assert.strictEqual(result.length, 2);
             checkWedge(result[0], 10, 18);
             checkWedge(result[1], 18, 20, 'a', 1);
         });
         it('works with cut entirely around wedge', () => {
-            const result = fov.warpWedge(makeWedge(10, 20), 5, 25, warpA, 1);
+            const result = warpWedge(makeWedge(10, 20), 5, 25, warpA, 1);
             assert.strictEqual(result.length, 1);
             checkWedge(result[0], 10, 20, 'a', 1);
         });
         it('works with cut entirely inside wedge, extra warp', () => {
-            const result = fov.warpWedge(makeWedge(10, 20, 'b', 1), 15, 16, warpA, 2);
+            const result = warpWedge(makeWedge(10, 20, 'b', 1), 15, 16, warpA, 2);
             assert.strictEqual(result.length, 3);
             checkWedge(result[0], 10, 15, 'b', 1);
             checkWedge(result[1], 15, 16, 'a', 2);
             checkWedge(result[2], 16, 20, 'b', 1);
         });
         it('works with cut in low part of wedge, extra warp', () => {
-            const result = fov.warpWedge(makeWedge(10, 20, 'b', 1), 5, 12, warpA, 2);
+            const result = warpWedge(makeWedge(10, 20, 'b', 1), 5, 12, warpA, 2);
             assert.strictEqual(result.length, 2);
             checkWedge(result[0], 10, 12, 'a', 2);
             checkWedge(result[1], 12, 20, 'b', 1);
         });
         it('works with cut in high part of wedge, extra warp', () => {
-            const result = fov.warpWedge(makeWedge(10, 20, 'b', 1), 18, 22, warpA, 2);
+            const result = warpWedge(makeWedge(10, 20, 'b', 1), 18, 22, warpA, 2);
             assert.strictEqual(result.length, 2);
             checkWedge(result[0], 10, 18, 'b', 1);
             checkWedge(result[1], 18, 20, 'a', 2);
@@ -192,11 +194,11 @@ describe('carto/fov/fov-util', () => {
     });
     describe('warpWedges', () => {
         it('works on empty wedge list', () => {
-            const result = fov.warpWedges([], 0, 1, warpA, 1);
+            const result = warpWedges([], 0, 1, warpA, 1);
             assert.strictEqual(result.length, 0);
         });
         it('works with cut over two wedges', () => {
-            const result = fov.warpWedges([
+            const result = warpWedges([
                 makeWedge(10, 15),
                 makeWedge(16, 20),
             ], 12, 18, warpA, 1);
@@ -207,7 +209,7 @@ describe('carto/fov/fov-util', () => {
             checkWedge(result[3], 18, 20);
         });
         it('works with cut over three wedges', () => {
-            const result = fov.warpWedges([
+            const result = warpWedges([
                 makeWedge(10, 15),
                 makeWedge(16, 20),
                 makeWedge(21, 25),
@@ -220,7 +222,7 @@ describe('carto/fov/fov-util', () => {
             checkWedge(result[4], 22, 25);
         });
         it('works with cut around one wedge and in low part of another', () => {
-            const result = fov.warpWedges([
+            const result = warpWedges([
                 makeWedge(10, 15),
                 makeWedge(16, 20),
             ], 9, 18, warpA, 1);
@@ -230,7 +232,7 @@ describe('carto/fov/fov-util', () => {
             checkWedge(result[2], 18, 20);
         });
         it('works with cut in high part of one wedge and around another', () => {
-            const result = fov.warpWedges([
+            const result = warpWedges([
                 makeWedge(10, 15),
                 makeWedge(16, 20),
             ], 12, 22, warpA, 1);
@@ -242,86 +244,86 @@ describe('carto/fov/fov-util', () => {
     });
     describe('whichWedge', () => {
         it('works with wedge around center', () => {
-            const wedges = new Array<fov.Wedge>();
+            const wedges = new Array<Wedge>();
             wedges.push(makeWedge(10, 20));
-            const index = fov.whichWedge(wedges, 0, 15);
+            const index = whichWedge(wedges, 0, 15);
             assert.strictEqual(index, 0);
         });
         it('works with one wedge before center', () => {
-            const wedges = new Array<fov.Wedge>();
+            const wedges = new Array<Wedge>();
             wedges.push(makeWedge(10, 12));
-            const index = fov.whichWedge(wedges, 0, 15);
+            const index = whichWedge(wedges, 0, 15);
             assert.strictEqual(index, 0);
         });
         it('works with one wedge after center', () => {
-            const wedges = new Array<fov.Wedge>();
+            const wedges = new Array<Wedge>();
             wedges.push(makeWedge(18, 20));
-            const index = fov.whichWedge(wedges, 0, 15);
+            const index = whichWedge(wedges, 0, 15);
             assert.strictEqual(index, 0);
         });
         it('works when first wedge is closest', () => {
-            const wedges = new Array<fov.Wedge>();
+            const wedges = new Array<Wedge>();
             wedges.push(makeWedge(10, 14));
             wedges.push(makeWedge(18, 20));
-            const index = fov.whichWedge(wedges, 0, 15);
+            const index = whichWedge(wedges, 0, 15);
             assert.strictEqual(index, 0);
         });
         it('works when second wedge is closest', () => {
-            const wedges = new Array<fov.Wedge>();
+            const wedges = new Array<Wedge>();
             wedges.push(makeWedge(10, 12));
             wedges.push(makeWedge(16, 20));
-            const index = fov.whichWedge(wedges, 0, 15);
+            const index = whichWedge(wedges, 0, 15);
             assert.strictEqual(index, 1);
         });
         it('works when first wedge is very close', () => {
-            const wedges = new Array<fov.Wedge>();
-            wedges.push(makeWedge(10, 15 - fov.WALL_EPSILON));
+            const wedges = new Array<Wedge>();
+            wedges.push(makeWedge(10, 15 - constants.WALL_OUTSET));
             wedges.push(makeWedge(18, 20));
-            const index = fov.whichWedge(wedges, 0, 15);
+            const index = whichWedge(wedges, 0, 15);
             assert.strictEqual(index, 0);
         });
         it('works when second wedge is very close', () => {
-            const wedges = new Array<fov.Wedge>();
+            const wedges = new Array<Wedge>();
             wedges.push(makeWedge(10, 12));
-            wedges.push(makeWedge(15 + fov.WALL_EPSILON, 20));
-            const index = fov.whichWedge(wedges, 0, 15);
+            wedges.push(makeWedge(15 + constants.WALL_OUTSET, 20));
+            const index = whichWedge(wedges, 0, 15);
             assert.strictEqual(index, 1);
         });
         it('skips to the right wedge', () => {
-            const wedges = new Array<fov.Wedge>();
+            const wedges = new Array<Wedge>();
             wedges.push(makeWedge(10, 11));
             wedges.push(makeWedge(11, 12));
             wedges.push(makeWedge(12, 13));
             wedges.push(makeWedge(14, 16));
-            const index = fov.whichWedge(wedges, 0, 15);
+            const index = whichWedge(wedges, 0, 15);
             assert.strictEqual(index, 3);
         });
         it('works with two very close wedges, when the first has the low warp count', () => {
-            const wedges = new Array<fov.Wedge>();
-            wedges.push(makeWedge(10, 15 - fov.WALL_EPSILON, 'b', 1));
-            wedges.push(makeWedge(15 + fov.WALL_EPSILON / 2, 20, 'a', 2));
-            const index = fov.whichWedge(wedges, 0, 15);
+            const wedges = new Array<Wedge>();
+            wedges.push(makeWedge(10, 15 - constants.WALL_OUTSET, 'b', 1));
+            wedges.push(makeWedge(15 + constants.WALL_OUTSET / 2, 20, 'a', 2));
+            const index = whichWedge(wedges, 0, 15);
             assert.strictEqual(index, 0);
         });
         it('works with two very close wedges, when the second has the low warp count', () => {
-            const wedges = new Array<fov.Wedge>();
-            wedges.push(makeWedge(10, 15 - fov.WALL_EPSILON / 2, 'a', 2));
-            wedges.push(makeWedge(15 + fov.WALL_EPSILON, 20, 'b', 1));
-            const index = fov.whichWedge(wedges, 0, 15);
+            const wedges = new Array<Wedge>();
+            wedges.push(makeWedge(10, 15 - constants.WALL_OUTSET / 2, 'a', 2));
+            wedges.push(makeWedge(15 + constants.WALL_OUTSET, 20, 'b', 1));
+            const index = whichWedge(wedges, 0, 15);
             assert.strictEqual(index, 1);
         });
         it('works with two very close wedges, when the first has the low map id', () => {
-            const wedges = new Array<fov.Wedge>();
-            wedges.push(makeWedge(10, 15 - fov.WALL_EPSILON, 'a', 2));
-            wedges.push(makeWedge(15 + fov.WALL_EPSILON / 2, 20, 'b', 2));
-            const index = fov.whichWedge(wedges, 0, 15);
+            const wedges = new Array<Wedge>();
+            wedges.push(makeWedge(10, 15 - constants.WALL_OUTSET, 'a', 2));
+            wedges.push(makeWedge(15 + constants.WALL_OUTSET / 2, 20, 'b', 2));
+            const index = whichWedge(wedges, 0, 15);
             assert.strictEqual(index, 0);
         });
         it('works with two very close wedges, when the second has the low map id', () => {
-            const wedges = new Array<fov.Wedge>();
-            wedges.push(makeWedge(10, 15 - fov.WALL_EPSILON / 2, 'b', 2));
-            wedges.push(makeWedge(15 + fov.WALL_EPSILON, 20, 'a', 2));
-            const index = fov.whichWedge(wedges, 0, 15);
+            const wedges = new Array<Wedge>();
+            wedges.push(makeWedge(10, 15 - constants.WALL_OUTSET / 2, 'b', 2));
+            wedges.push(makeWedge(15 + constants.WALL_OUTSET, 20, 'a', 2));
+            const index = whichWedge(wedges, 0, 15);
             assert.strictEqual(index, 1);
         });
     });
