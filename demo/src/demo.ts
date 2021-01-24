@@ -375,16 +375,18 @@ window.addEventListener('keydown', (event) => {
                 nx ++;
                 break;
         }
-        if (nx >= 0 && ny >= 0 && nx < width && ny < height && !maps[pmap].getWall(px, py, dir) && !maps[pmap].getBody(nx, ny)) {
+        if (nx >= 0 && ny >= 0 && nx < width && ny < height && !maps[pmap].getWall(px, py, dir)) {
             const dx = nx - px;
             const dy = ny - py;
             const map = fov.getTargetMap(dx, dy);
-            pmap = parseInt(map.id);
-            if (pmap !== 2 || !lava[ny][nx]) {
-                px = nx;
-                py = ny;
+            if (!map.getBody(nx, ny)) {
+                pmap = parseInt(map.id);
+                if (pmap !== 2 || !lava[ny][nx]) {
+                    px = nx;
+                    py = ny;
+                }
+                requestAnimationFrame(render);
             }
-            requestAnimationFrame(render);
         }
         event.preventDefault();
         auto = false;

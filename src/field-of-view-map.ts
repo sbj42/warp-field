@@ -1,8 +1,12 @@
 import * as geom from 'tiled-geometry';
-import {Warp} from './warp';
 import {TileFlags} from './tile-flags';
 
 /* eslint-disable indent */
+
+interface Warp {
+    map: FieldOfViewMap;
+    offsetShift: geom.Offset;
+}
 
 /**
  * We avoid heap allocations during the core part of the algorithm by using this
@@ -107,17 +111,32 @@ export class FieldOfViewMap {
 
     // TODO add length argument
     addWarp(sourceX: number, sourceY: number, dir: geom.CardinalDirection,
-            targetMap: FieldOfViewMap, targetX: number, targetY: number): this {
+            targetMap: FieldOfViewMap, targetX: number, targetY: number, oneWay?: boolean): this {
+        if (!oneWay) {
+            LOCAL_OFF.set(sourceX - targetX, sourceY - targetY)
+                .addCardinalDirection(dir);
+            const targetWarpId = targetMap._findOrMakeWarp(this, LOCAL_OFF);
+            targetMap._addWarp(targetX, targetY, geom.cardinalDirectionOpposite(dir), targetWarpId);
+        }
         LOCAL_OFF.set(targetX - sourceX, targetY - sourceY)
             .addCardinalDirection(geom.cardinalDirectionOpposite(dir));
         const warpId = this._findOrMakeWarp(targetMap, LOCAL_OFF);
-        LOCAL_OFF.set(sourceX, sourceY);
-        this._addWarp(LOCAL_OFF.x, LOCAL_OFF.y, dir, warpId);
+        this._addWarp(sourceX, sourceY, dir, warpId);
         return this;
     }
 
     // TODO add length argument
-    removeWarp(sourceX: number, sourceY: number, dir: geom.CardinalDirection): this {
+    removeWarp(sourceX: number, sourceY: number, dir: geom.CardinalDirection, oneWay = false): this {
+        if (!oneWay) {
+            const warp = this._getWarp(sourceX, sourceY, dir);
+            if (!warp) {
+                return this;
+            }
+            LOCAL_OFF.set(sourceX, sourceY)
+                    .addCardinalDirection(dir)
+                    .addOffset(warp.offsetShift);
+            warp.map._removeWarp(LOCAL_OFF.x, LOCAL_OFF.y, geom.cardinalDirectionOpposite(dir));
+        }
         this._removeWarp(sourceX, sourceY, dir);
         return this;
     }
@@ -134,6 +153,21 @@ export class FieldOfViewMap {
 
     getWarpFlag(sourceX: number, sourceY: number, dir: geom.CardinalDirection): boolean {
         return !!this._getWarp(sourceX, sourceY, dir);
+    }
+
+    getWarpTargetMap(sourceX: number, sourceY: number, dir: geom.CardinalDirection): FieldOfViewMap | undefined {
+        return this._getWarp(sourceX, sourceY, dir)?.map;
+    }
+
+    getWarpTargetOffset(sourceX: number, sourceY: number, dir: geom.CardinalDirection): geom.OffsetLike | undefined {
+        const shift = this._getWarp(sourceX, sourceY, dir)?.offsetShift;
+        if (shift) {
+            LOCAL_OFF.copyFrom(shift)
+                .add(sourceX, sourceY)
+                .addCardinalDirection(dir);
+            return { x: LOCAL_OFF.x, y: LOCAL_OFF.y };
+        }
+        return undefined;
     }
 
     // internal

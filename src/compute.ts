@@ -1,15 +1,17 @@
 import * as geom from 'tiled-geometry';
 import * as constants from './constants';
 import {
-    cutWedges,
-    warpWedges,
-    whichWedge,
     initWedges,
+    getBestWedge,
+    addShadow,
+    Wedge,
+    addWarp,
+    mergeWedges,
 } from './wedge';
 import {TileFlags} from './tile-flags';
-import {Warp} from './warp';
 import { FieldOfViewMap } from './field-of-view-map';
 import { FieldOfViewImpl } from './field-of-view-impl';
+import { WarpData, WarpDataCache } from './warp-data';
 
 /* eslint-disable indent */
 
@@ -26,46 +28,35 @@ import { FieldOfViewImpl } from './field-of-view-impl';
  * location in that map which is visible there.
  */
 export function computeFieldOfView(map: FieldOfViewMap, x: number, y: number, chebyshevRadius: number): FieldOfViewImpl {
+    if (!map.contains(x, y)) {
+        throw new Error(`origin is not on the map`);
+    }
     const origin = new geom.Offset(x, y);
     const field = new FieldOfViewImpl(map, origin, chebyshevRadius);
+    const warpDataCache = new WarpDataCache();
+    const baseWarp = warpDataCache.get(map, 0, x, y);
     // the field is divided into quadrants
-    quadrant(map, field, origin, chebyshevRadius, -1, -1);
-    quadrant(map, field, origin, chebyshevRadius,  1, -1);
-    quadrant(map, field, origin, chebyshevRadius, -1,  1);
-    quadrant(map, field, origin, chebyshevRadius,  1,  1);
+    quadrant(field, origin, chebyshevRadius, -1, -1, warpDataCache, baseWarp);
+    quadrant(field, origin, chebyshevRadius,  1, -1, warpDataCache, baseWarp);
+    quadrant(field, origin, chebyshevRadius, -1,  1, warpDataCache, baseWarp);
+    quadrant(field, origin, chebyshevRadius,  1,  1, warpDataCache, baseWarp);
     return field;
 }
 
-function quadrant(map: FieldOfViewMap, field: FieldOfViewImpl, origin: geom.OffsetLike, chebyshevRadius: number,
-                  xSign: -1 | 1, ySign: -1 | 1): void {
-    const endDXY = (chebyshevRadius + 1);
-    if (endDXY < 0 || !map.contains(origin.x, origin.y)) {
-        return;
-    }
+function quadrant(field: FieldOfViewImpl, origin: geom.OffsetLike, chebyshevRadius: number,
+                  xSign: -1 | 1, ySign: -1 | 1, warpDataCache : WarpDataCache, baseWarp: WarpData): void {
+    const yDir = [geom.CardinalDirection.NORTH, geom.CardinalDirection.SOUTH][(ySign + 1) / 2];
+    const xDir = [geom.CardinalDirection.WEST, geom.CardinalDirection.EAST][(xSign + 1) / 2];
     const farYFlag = [TileFlags.WALL_NORTH, TileFlags.WALL_SOUTH][(ySign + 1) / 2];
     const farXFlag = [TileFlags.WALL_WEST, TileFlags.WALL_EAST][(xSign + 1) / 2];
-    const yWarpDir = [geom.CardinalDirection.NORTH, geom.CardinalDirection.SOUTH][(ySign + 1) / 2];
-    const xWarpDir = [geom.CardinalDirection.WEST, geom.CardinalDirection.EAST][(xSign + 1) / 2];
-    const startMapIndex = map.index(origin.x, origin.y);
-    const startMaskIndex = field.visible.index(0, 0);
-    // Initial wedge is from slope zero to slope infinity (i.e. the whole quadrant)
-    const wedges = initWedges();
-    for (let dy = 0, yMapIndex = startMapIndex, yMaskIndex = startMaskIndex;
-            dy !== endDXY && wedges.length > 0;
-            dy ++, yMapIndex += ySign * map.width, yMaskIndex += ySign * field.visible.width
-    ) {
-        const divYpos = 1 / (dy + 0.5);
-        const divYneg = dy === 0 ? Number.POSITIVE_INFINITY : 1 / (dy - 0.5);
-        const divYmid = 1 / dy;
-        let wedgeIndex = 0;
-        for (let dx = 0, mapIndex = yMapIndex, maskIndex = yMaskIndex,
-                slopeY = -0.5 * divYpos, slopeX = 0.5 * divYneg,
-                slopeFar = 0.5 * divYpos, slopeMid = 0;
-                dx !== endDXY && wedgeIndex !== wedges.length;
-                dx ++, mapIndex += xSign, maskIndex += xSign,
-                slopeY += divYpos, slopeX += divYneg,
-                slopeFar += divYpos, slopeMid += divYmid
-        ) {
+
+    let wedges = initWedges(baseWarp);
+
+    for (let ny = 0; ny <= chebyshevRadius; ny ++) {
+        const dy = ny * ySign;
+        for (let nx = 0; nx <= chebyshevRadius; nx ++) {
+            const dx = nx * xSign;
+
             // the slopes of the four corners of this tile
             // these are named as follows:
             //   slopeY is the slope closest to the Y axis
@@ -82,114 +73,173 @@ function quadrant(map: FieldOfViewMap, field: FieldOfViewImpl, origin: geom.Offs
             // +---+---+---X
             // |   |   | C |
             // +---+---Y---F
+            const slopeY = (nx - 0.5) / (ny + 0.5);
+            const slopeFar = (nx + 0.5) / (ny + 0.5);
+            const slopeMid = ny !== 0 ? nx / ny : Number.POSITIVE_INFINITY;
+            const slopeX = ny !== 0 ? (nx + 0.5) / (ny - 0.5) : Number.POSITIVE_INFINITY;
 
-            // the walls of this tile
-            // these are named as follows:
-            //   wallY is the farthest horizontal wall (slopeY to slopeFar)
-            //   wallX is the farthest vertical wall (slopeFar to slopeX)
-            //
-            // O = origin, C = current
-            // +---+---+---+
-            // | O |   |   |
-            // +---+---+---+
-            // |   |   | C X
-            // +---+---+-Y-+
-
-            // advance the wedge index until this tile is not after the current wedge
-            while (slopeY >= wedges[wedgeIndex].high) {
-                wedgeIndex ++;
-                if (wedgeIndex >= wedges.length) {
-                    break;
+            // among all non-shadow wedges that intersect this tile,
+            // choose the one closest to slopeMid (with additional rules
+            // for breaking ties)
+            {
+                const wedge = getBestWedge(wedges, slopeY, slopeMid, slopeX);
+                field.warps[field.visible.index(dx, dy)] = wedge.warp;
+                if (wedge.shadow) {
+                    field.visible.set(dx, dy, false);
                 }
             }
-            if (wedgeIndex >= wedges.length) {
-                break;
-            }
+            const newWedges: Wedge[] = [];
 
-            // if the current wedge is after this tile, move on
-            if (slopeX <= wedges[wedgeIndex].low) {
-                continue;
-            }
+            // add shadows and warps to each wedge that passes through this tile
+            for (const wedge of wedges) {
+                if (wedge.low >= slopeX || wedge.high <= slopeY) {
+                    newWedges.push(wedge);
+                    continue;
+                }
+                const warpData = wedge.warp;
+                const map = warpData.map;
+                const x = warpData.shiftX + dx;
+                const y = warpData.shiftY + dy;
+                if (!map.contains(x, y)) {
+                    newWedges.push(wedge);
+                    continue;
+                }
 
-            const centerWedge = whichWedge(wedges, wedgeIndex, slopeMid);
-            field.visible.setAtIndex(maskIndex, true);
-            field.warps[maskIndex] = wedges[centerWedge].warp;
+                // the walls of this tile
+                // these are named as follows:
+                //   wallY is the farthest horizontal wall (slopeY to slopeFar)
+                //   wallX is the farthest vertical wall (slopeFar to slopeX)
+                //
+                // O = origin, C = current
+                // +---+---+---+
+                // | O |   |   |
+                // +---+---+---+
+                // |   |   | C X
+                // +---+---+-Y-+
 
-            let wedgeIndexInner = wedgeIndex;
-            while (wedgeIndexInner < wedges.length && slopeX > wedges[wedgeIndexInner].low) {
-                let newWedges = [wedges[wedgeIndexInner]];
-                const {warp} = wedges[wedgeIndexInner];
-                let wallY: boolean;
-                let wallX: boolean;
-                let body: boolean;
-                let warpY: Warp | undefined;
-                let warpX: Warp | undefined;
-                const nextWarpCount = wedges[wedgeIndexInner].warpCount + 1;
+                const mapIndex = map.index(x, y);
+                const tileFlags = map.getTileFlagsAtIndex(mapIndex);
+                const warpY = map.getWarpAtIndex(mapIndex, yDir);
+                const warpX = map.getWarpAtIndex(mapIndex, xDir);
+                // warps override walls
+                const wallY = !warpY && (tileFlags & farYFlag) !== 0;
+                const wallX = !warpX && (tileFlags & farXFlag) !== 0;
 
-                if (typeof warp === 'undefined') {
-                    wallY = (map.getTileFlagsAtIndex(mapIndex) & farYFlag) !== 0;
-                    wallX = (map.getTileFlagsAtIndex(mapIndex) & farXFlag) !== 0;
-                    body = (dx !== 0 || dy !== 0) && (map.getTileFlagsAtIndex(mapIndex) & TileFlags.BODY) !== 0;
-                    warpY = map.getWarpAtIndex(mapIndex, yWarpDir);
-                    warpX = map.getWarpAtIndex(mapIndex, xWarpDir);
+                // shadows
+                // /- slopeY - WALL_OUTSET
+                // |  /- slopeY
+                // |  .  /- slopeY + BODY_INSET
+                // |  .  |     /- slopeFar - WALL_OUTSET
+                // |  .  |     |  /- slopeFar
+                // |  .  |     |  .  /- slopeFar + WALL_OUTSET
+                // |  .  |     |  .  |     /- slopeX - BODY_INSET
+                // |  .  |     |  .  |     |  /- slopeX
+                // |  .  |     |  .  |     |  .  /- slopeX + WALL_OUTSET
+                // |  .  |     |  .  |     |  .  |
+                // |  .  |     |  .  |     |  .  |
+                // =======wallY=======
+                //       ========body=======
+                //             =======wallX=======
+
+                let shadowWedges: Wedge[];
+                if (wallY && wallX) {
+                    // add full shadow, covering wallY and wallX
+                    shadowWedges = addShadow(wedge,
+                        slopeY - constants.WALL_OUTSET,
+                        slopeX + constants.WALL_OUTSET);
                 } else {
-                    const {map: target, offsetShift} = warp;
-                    const targetIndex = target.index(offsetShift.x + origin.x + dx * xSign, offsetShift.y + origin.y + dy * ySign);
-                    wallY = (target.getTileFlagsAtIndex(targetIndex) & farYFlag) !== 0;
-                    wallX = (target.getTileFlagsAtIndex(targetIndex) & farXFlag) !== 0;
-                    body = (dx !== 0 || dy !== 0) && (target.getTileFlagsAtIndex(targetIndex) & TileFlags.BODY) !== 0;
-                    warpY = target.getWarpAtIndex(targetIndex, yWarpDir);
-                    warpX = target.getWarpAtIndex(targetIndex, xWarpDir);
-                }
-
-                if (wallX && wallY) {
-                    // this tile has both far walls
-                    // so we can't see beyond it and the whole range should be cut out of the wedge(s)
-                    newWedges = cutWedges(newWedges, slopeY - constants.WALL_OUTSET, slopeX + constants.WALL_OUTSET);
-                } else if (wallX) {
-                    if (typeof warpY !== 'undefined') {
-                        newWedges = warpWedges(newWedges,
-                            slopeY - constants.WARP_OUTSET, slopeFar + constants.WARP_OUTSET, warpY, nextWarpCount);
-                    }
+                    const body = (nx !== 0 || ny !== 0) && (tileFlags & TileFlags.BODY) !== 0;
                     if (body) {
-                        newWedges = cutWedges(newWedges,
-                            slopeY + constants.BODY_INSET, slopeX + constants.WALL_OUTSET);
+                        if (wallY) {
+                            // add shadow covering wallY and body
+                            shadowWedges = addShadow(wedge,
+                                slopeY - constants.WALL_OUTSET,
+                                slopeX - constants.BODY_INSET);
+                        } else if (wallX) {
+                            // add shadow covering body and wallX
+                            shadowWedges = addShadow(wedge,
+                                slopeY + constants.BODY_INSET,
+                                slopeX + constants.WALL_OUTSET);
+                        } else {
+                            // add shadow covering body
+                            shadowWedges = addShadow(wedge,
+                                slopeY + constants.BODY_INSET,
+                                slopeX - constants.BODY_INSET);
+                        }
+                    } else if (wallY) {
+                        // add shadow covering wallY
+                        shadowWedges = addShadow(wedge,
+                            slopeY - constants.WALL_OUTSET,
+                            slopeFar + constants.WALL_OUTSET);
+                    } else if (wallX) {
+                        // add shadow covering wallX
+                        shadowWedges = addShadow(wedge,
+                            slopeFar - constants.WALL_OUTSET,
+                            slopeX + constants.WALL_OUTSET);
                     } else {
-                        newWedges = cutWedges(newWedges,
-                            slopeFar - constants.WALL_OUTSET, slopeX + constants.WALL_OUTSET);
-                    }
-                } else if (wallY) {
-                    if (body) {
-                        newWedges = cutWedges(newWedges,
-                            slopeY - constants.WALL_OUTSET, slopeX - constants.BODY_INSET);
-                    } else {
-                        newWedges = cutWedges(newWedges,
-                            slopeY - constants.WALL_OUTSET, slopeFar + constants.WALL_OUTSET);
-                    }
-                    if (typeof warpX !== 'undefined') {
-                        newWedges = warpWedges(newWedges,
-                            slopeFar - constants.WARP_OUTSET, slopeX + constants.WARP_OUTSET, warpX, nextWarpCount);
-                    }
-                } else {
-                    if (typeof warpY !== 'undefined') {
-                        newWedges = warpWedges(newWedges,
-                            slopeY - constants.WARP_OUTSET, slopeFar + constants.WARP_OUTSET, warpY, nextWarpCount);
-                    }
-                    if (body) {
-                        newWedges = cutWedges(newWedges,
-                            slopeY + constants.BODY_INSET, slopeX - constants.BODY_INSET);
-                    }
-                    if (typeof warpX !== 'undefined') {
-                        newWedges = warpWedges(newWedges,
-                            slopeFar - constants.WARP_OUTSET, slopeX + constants.WARP_OUTSET, warpX, nextWarpCount);
+                        // no new shadows
+                        shadowWedges = [wedge];
                     }
                 }
 
-                if (newWedges.length !== 1) {
-                    wedges.splice(wedgeIndexInner, 1, ...newWedges);
+                for (const shadowWedge of shadowWedges) {
+
+                    // warps
+                    // /- slopeY - WARP_OUTSET
+                    // |  /- slopeY
+                    // |  .     /- slopeFar - WARP_OUTSET
+                    // |  .     |  /- slopeFar
+                    // |  .     |  .  /- slopeFar + WARP_OUTSET
+                    // |  .     |  .  |     /- slopeX
+                    // |  .     |  .  |     .  /- slopeX + WARP_OUTSET
+                    // |  .     |  .  |     .  |
+                    // |  .     |  .  |     .  |
+                    // =====warpY======
+                    //          =====warpX======
+                    // if warpY and warpX, then they don't overlap:
+                    // ====warpY====
+                    //             ====warpX====
+
+                    if (warpY && warpX) {
+                        // add warp from slopeY - WARP_OUTSET to slopeFar
+                        const warpDataY = warpDataCache.get(warpY.map, warpData.warpCount + 1,
+                            warpData.shiftX + warpY.offsetShift.x, warpData.shiftY + warpY.offsetShift.y);
+                        const warpWedges = addWarp(shadowWedge, warpDataY,
+                            slopeY - constants.WARP_OUTSET,
+                            slopeFar);
+                        // add warp from slopeFar to slopeX + WARP_OUTSET
+                        const warpDataX = warpDataCache.get(warpX.map, warpData.warpCount + 1,
+                            warpData.shiftX + warpX.offsetShift.x, warpData.shiftY + warpX.offsetShift.y);
+                        for (const warpWedge of warpWedges) {
+                            newWedges.push(...addWarp(warpWedge, warpDataX,
+                                slopeFar,
+                                slopeX + constants.WARP_OUTSET));
+                        }
+                    } else if (warpY) {
+                        // no warpX
+                        // add warp from slopeY - WARP_OUTSET to slopeFar + WARP_OUTSET
+                        const warpDataY = warpDataCache.get(warpY.map, warpData.warpCount + 1,
+                            warpData.shiftX + warpY.offsetShift.x, warpData.shiftY + warpY.offsetShift.y);
+                        newWedges.push(...addWarp(shadowWedge, warpDataY,
+                            slopeY - constants.WARP_OUTSET,
+                            slopeFar + constants.WARP_OUTSET));
+                    } else if (warpX) {
+                        // no warpY
+                        // add warp from slopeFar - WARP_OUTSET to slopeX + WARP_OUTSET
+                        const warpDataX = warpDataCache.get(warpX.map, warpData.warpCount + 1,
+                            warpData.shiftX + warpX.offsetShift.x, warpData.shiftY + warpX.offsetShift.y);
+                        newWedges.push(...addWarp(shadowWedge, warpDataX,
+                            slopeFar - constants.WARP_OUTSET,
+                            slopeX + constants.WARP_OUTSET));
+                    } else {
+                        // no warps
+                        newWedges.push(shadowWedge);
+                    }
+
                 }
-                wedgeIndexInner += newWedges.length;
             }
+            wedges = mergeWedges(newWedges);
+
         }
     }
 }

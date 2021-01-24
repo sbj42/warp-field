@@ -1,14 +1,14 @@
 import * as geom from 'tiled-geometry';
 import {FieldOfViewMap} from '.';
 import { FieldOfView } from './field-of-view';
-import { Warp } from './warp';
+import { WarpData } from './warp-data';
 
 export class FieldOfViewImpl implements FieldOfView {
     readonly map: FieldOfViewMap;
     readonly origin: geom.Offset;
     readonly chebyshevRadius: number;
     readonly visible: geom.MaskRectangle;
-    readonly warps: (Warp | undefined)[];
+    readonly warps: WarpData[];
 
     constructor(map: FieldOfViewMap, origin: geom.Offset, chebyshevRadius: number) {
         this.map = map;
@@ -18,10 +18,10 @@ export class FieldOfViewImpl implements FieldOfView {
             - chebyshevRadius, - chebyshevRadius,
             chebyshevRadius * 2 + 1, chebyshevRadius * 2 + 1,
         );
-        this.visible = new geom.MaskRectangle(boundRect);
+        this.visible = new geom.MaskRectangle(boundRect, true);
         // the origin is always visible
         this.visible.set(0, 0, true);
-        this.warps = [];
+        this.warps = new Array<WarpData>(boundRect.area);
     }
 
     getVisible(dx: number, dy: number): boolean {
@@ -29,18 +29,12 @@ export class FieldOfViewImpl implements FieldOfView {
     }
 
     getTargetMap(dx: number, dy: number): FieldOfViewMap {
-        const warp = this._getWarp(dx, dy);
-        return warp?.map || this.map;
+        return this._getWarp(dx, dy).map;
     }
 
     getTargetOffset(dx: number, dy: number): geom.OffsetLike {
-        const offset = new geom.Offset(dx, dy);
-        offset.addOffset(this.origin);
         const warp = this._getWarp(dx, dy);
-        if (warp) {
-            offset.addOffset(warp.offsetShift);
-        }
-        return offset;
+        return { x: warp.shiftX + dx, y: warp.shiftY + dy };
     }
 
     toString(): string {
@@ -51,11 +45,7 @@ export class FieldOfViewImpl implements FieldOfView {
                     ret += '@';
                 } else if (this.getVisible(dx, dy)) {
                     const warp = this._getWarp(dx, dy);
-                    if (typeof warp === 'undefined') {
-                        ret += '-';
-                    } else {
-                        ret += warp.map.id[0];
-                    }
+                    ret += warp.map.id[0];
                 } else {
                     ret += '.';
                 }

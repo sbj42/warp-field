@@ -29,3 +29,6 @@ export const WALL_OUTSET = BODY_INSET / 4;
  */
 export const WARP_OUTSET = WALL_OUTSET / 4;
 // TODO make this / 10 so it's easier to see in the number
+
+// must be bigger than WALL_OUTSET
+export const PICK_WEDGE_EPSILON = WALL_OUTSET * 2;
