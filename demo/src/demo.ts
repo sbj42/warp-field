@@ -248,20 +248,31 @@ function render() {
         for (let x = 0; x < width; x ++) {
             const dx = x - px;
             const dy = y - py;
-            if (!fov.getVisible(dx, dy)) {
-                // nothing
+            const map = fov.getVisible(dx, dy) ? fov.getTargetMap(dx, dy) : maps[pmap];
+            const mapId = parseInt(map.id);
+            if (mapId === 0) {
+                context.fillStyle = '#aaf';
+            } else if (mapId === 1) {
+                context.fillStyle = '#afa';
             } else {
-                const map = fov.getTargetMap(dx, dy);
-                const mapId = parseInt(map.id);
-                if (mapId === 0) {
-                    context.fillStyle = '#aaf';
-                } else if (mapId === 1) {
-                    context.fillStyle = '#afa';
-                } else {
-                    context.fillStyle = '#faa';
-                }
-                context.fillRect(x * 32, y * 32, 32, 32);
-                drawImage('floor' + Math.floor(1 + tileRand[index(x, y)] * 6), mapId, x, y);
+                context.fillStyle = '#faa';
+            }
+            context.fillRect(x * 32, y * 32, 32, 32);
+            drawImage('floor' + Math.floor(1 + tileRand[index(x, y)] * 6), mapId, x, y);
+        }
+    }
+    for (let y = 0; y < height; y ++) {
+        for (let x = 0; x < width; x ++) {
+            const dx = x - px;
+            const dy = y - py;
+            const map = fov.getVisible(dx, dy) ? fov.getTargetMap(dx, dy) : maps[pmap];
+            const offset = fov.getVisible(dx, dy) ? fov.getTargetOffset(dx, dy) : new WarpField.Offset(x, y);
+            const mapId = parseInt(map.id);
+            if (map.getBody(offset.x, offset.y)) {
+                drawImage('box' + Math.floor(1 + tileRand[index(x, y)] * 3), mapId, x, y);
+            }
+            if (mapId === 2 && lava[offset.y][offset.x]) {
+                drawImage('box' + Math.floor(1 + tileRand[index(x, y)] * 3), mapId, x, y);
             }
         }
     }
@@ -269,45 +280,22 @@ function render() {
         for (let x = 0; x < width; x ++) {
             const dx = x - px;
             const dy = y - py;
-            if (!fov.getVisible(dx, dy)) {
-                // nothing
-            } else {
-                const map = fov.getTargetMap(dx, dy);
-                const offset = fov.getTargetOffset(dx, dy);
-                const mapId = parseInt(map.id);
-                if (map.getBody(offset.x, offset.y)) {
-                    drawImage('box' + Math.floor(1 + tileRand[index(x, y)] * 3), mapId, x, y);
+            const map = fov.getVisible(dx, dy) ? fov.getTargetMap(dx, dy) : maps[pmap];
+            const offset = fov.getVisible(dx, dy) ? fov.getTargetOffset(dx, dy) : new WarpField.Offset(x, y);
+            const mapId = parseInt(map.id);
+            {
+                const walls = map.getWalls(offset.x, offset.y);
+                if ((walls & WarpField.CardinalDirectionFlags.NORTH) !== 0) {
+                    drawImage('north', mapId, x, y);
                 }
-                if (mapId === 2 && lava[offset.y][offset.x]) {
-                    drawImage('box' + Math.floor(1 + tileRand[index(x, y)] * 3), mapId, x, y);
+                if ((walls & WarpField.CardinalDirectionFlags.EAST) !== 0) {
+                    drawImage('east', mapId, x, y);
                 }
-            }
-        }
-    }
-    for (let y = 0; y < height; y ++) {
-        for (let x = 0; x < width; x ++) {
-            const dx = x - px;
-            const dy = y - py;
-            if (!fov.getVisible(dx, dy)) {
-                // nothing
-            } else {
-                const map = fov.getTargetMap(dx, dy);
-                const offset = fov.getTargetOffset(dx, dy);
-                const mapId = parseInt(map.id);
-                {
-                    const walls = map.getWalls(offset.x, offset.y);
-                    if ((walls & WarpField.CardinalDirectionFlags.NORTH) !== 0) {
-                        drawImage('north', mapId, x, y);
-                    }
-                    if ((walls & WarpField.CardinalDirectionFlags.EAST) !== 0) {
-                        drawImage('east', mapId, x, y);
-                    }
-                    if ((walls & WarpField.CardinalDirectionFlags.SOUTH) !== 0) {
-                        drawImage('south', mapId, x, y);
-                    }
-                    if ((walls & WarpField.CardinalDirectionFlags.WEST) !== 0) {
-                        drawImage('west', mapId, x, y);
-                    }
+                if ((walls & WarpField.CardinalDirectionFlags.SOUTH) !== 0) {
+                    drawImage('south', mapId, x, y);
+                }
+                if ((walls & WarpField.CardinalDirectionFlags.WEST) !== 0) {
+                    drawImage('west', mapId, x, y);
                 }
             }
         }
@@ -316,27 +304,34 @@ function render() {
         for (let x = 0; x < width; x ++) {
             const dx = x - px;
             const dy = y - py;
-            if (!fov.getVisible(dx, dy)) {
-                // nothing
-            } else {
-                const map = fov.getTargetMap(dx, dy);
-                const offset = fov.getTargetOffset(dx, dy);
-                const mapId = parseInt(map.id);
-                {
-                    const warps = map.getWarpFlags(offset.x, offset.y);
-                    if ((warps & WarpField.CardinalDirectionFlags.NORTH) !== 0) {
-                        drawImage('warpnorth', mapId, x, y);
-                    }
-                    if ((warps & WarpField.CardinalDirectionFlags.EAST) !== 0) {
-                        drawImage('warpeast', mapId, x, y);
-                    }
-                    if ((warps & WarpField.CardinalDirectionFlags.SOUTH) !== 0) {
-                        drawImage('warpsouth', mapId, x, y);
-                    }
-                    if ((warps & WarpField.CardinalDirectionFlags.WEST) !== 0) {
-                        drawImage('warpwest', mapId, x, y);
-                    }
+            const map = fov.getVisible(dx, dy) ? fov.getTargetMap(dx, dy) : maps[pmap];
+            const offset = fov.getVisible(dx, dy) ? fov.getTargetOffset(dx, dy) : new WarpField.Offset(x, y);
+            const mapId = parseInt(map.id);
+            {
+                const warps = map.getWarpFlags(offset.x, offset.y);
+                if ((warps & WarpField.CardinalDirectionFlags.NORTH) !== 0) {
+                    drawImage('warpnorth', mapId, x, y);
                 }
+                if ((warps & WarpField.CardinalDirectionFlags.EAST) !== 0) {
+                    drawImage('warpeast', mapId, x, y);
+                }
+                if ((warps & WarpField.CardinalDirectionFlags.SOUTH) !== 0) {
+                    drawImage('warpsouth', mapId, x, y);
+                }
+                if ((warps & WarpField.CardinalDirectionFlags.WEST) !== 0) {
+                    drawImage('warpwest', mapId, x, y);
+                }
+            }
+        }
+    }
+    for (let y = 0; y < height; y ++) {
+        for (let x = 0; x < width; x ++) {
+            const dx = x - px;
+            const dy = y - py;
+            const map = fov.getVisible(dx, dy) ? fov.getTargetMap(dx, dy) : maps[pmap];
+            const mapId = parseInt(map.id);
+            if (!fov.getVisible(dx, dy)) {
+                drawImage('shadow', mapId, x, y);
             }
         }
     }
@@ -413,6 +408,7 @@ const imageXOff: {[id: string]: number} = {
     'warpsouth': 15,
     'warpwest': 16,
     'player': 17,
+    'shadow': 18,
 };
 const tiles = new Image();
 tiles.src = './tiles.png';
