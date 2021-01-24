@@ -60,17 +60,27 @@ const fov = WarpField.computeFieldOfView(fovMap, playerX, playerY, visionRadius)
 See which tiles are visible:
 ```js
 // NOTE: coordinates are relative to the player
-fov.get(2, 0); // -> true
-fov.get(1, -1); // -> false
+fov.getVisible(2, 0); // -> true
+fov.getVisible(1, -1); // -> false
 ```
 
 Locate each visible tile:
 ```js
-fov.getTargetMap(1, -1); // -> map1
-fov.getTargetOffset(1, -1); // -> {x: 3, y: 2}
+fov.getTargetMap(1, 0); // -> map1
+fov.getTargetOffset(1, 0); // -> {x: 3, y: 2}
 fov.getTargetMap(2, 0); // -> map2
 fov.getTargetOffset(2, 0); // -> {x: 1, y: 2}
 ```
+## Upgrading to version 2
+
+Some API changes were made for version 2, here's what you need to do to upgrade:
+
+* The `Direction` enumeration has been renamed to `CardinalDirection`
+* Instead of calling `fovMap.getFieldOfView(x, y, radius)`, call `WarpField.computeFieldOfView(fovMap, x, y, radius)`
+* Instead of calling `fov.get(x, y)`, call `fov.getVisible(dx, dy)`
+* IMPORTANT: `getVisible()` takes coordinates relative to the player's position - not absolute map coordinates!
+
+If you're using TypeScript, some of the type names have changed.  For instance, the type for the field of view is now `FieldOfView` instead of `MaskRectangle`.
 
 ## Details
 
