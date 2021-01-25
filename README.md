@@ -1,6 +1,6 @@
 # WarpField
 
-![Dependencies](https://img.shields.io/badge/dependencies-none-green.svg)
+![Dependencies](https://img.shields.io/badge/dependencies-1-green.svg)
 [![Node.js CI](https://github.com/sbj42/warp-field/workflows/Node.js%20CI/badge.svg)](https://github.com/sbj42/warp-field/actions?query=workflow%3A%22Node.js+CI%22)
 [![License](https://img.shields.io/github/license/sbj42/warp-field.svg)](https://github.com/sbj42/warp-field)
 
@@ -29,9 +29,9 @@ const map1 = new WarpField.FieldOfViewMap('map1', width, height);
 
 Add some walls and bodies:
 ```js
-map1.addWall(3, 2, WarpField.Direction.NORTH);
-map1.addWall(3, 1, WarpField.Direction.WEST);
-map1.addWall(3, 2, WarpField.Direction.SOUTH);
+map1.addWall(3, 2, WarpField.CardinalDirection.NORTH);
+map1.addWall(3, 1, WarpField.CardinalDirection.WEST);
+map1.addWall(3, 2, WarpField.CardinalDirection.SOUTH);
 map1.addBody(4, 2);
 ```
 
@@ -40,13 +40,13 @@ Create another map:
 const width = 5;
 const height = 5;
 const map2 = new WarpField.FieldOfViewMap('map2', width, height);
-map2.addWall(3, 2, WarpField.Direction.SOUTH);
+map2.addWall(3, 2, WarpField.CardinalDirection.SOUTH);
 map2.addBody(2, 4);
 ```
 
 Add a warp from one map to the other:
 ```js
-map1.addWarp(3, 2, WarpField.Direction.EAST, map2, 1, 2);
+map1.addWarp(3, 2, WarpField.CardinalDirection.EAST, map2, 1, 2);
 ```
 
 Compute the field of view:
@@ -54,22 +54,33 @@ Compute the field of view:
 const playerX = 2;
 const playerY = 2;
 const visionRadius = 2;
-const fov = fovMap.getFieldOfView(playerX, playerY, visionRadius);
+const fov = WarpField.computeFieldOfView(fovMap, playerX, playerY, visionRadius);
 ```
 
 See which tiles are visible:
 ```js
-fov.get(4, 2); // -> true
-fov.get(3, 1); // -> false
+// NOTE: coordinates are relative to the player
+fov.getVisible(2, 0); // -> true
+fov.getVisible(1, -1); // -> false
 ```
 
 Locate each visible tile:
 ```js
-fov.getMap(3, 2); // -> map1
-fov.getOffset(3, 2); // -> {x: 3, y: 2}
-fov.getMap(4, 2); // -> map2
-fov.getOffset(4, 2); // -> {x: 1, y: 2}
+fov.getTargetMap(1, 0); // -> map1
+fov.getTargetOffset(1, 0); // -> {x: 3, y: 2}
+fov.getTargetMap(2, 0); // -> map2
+fov.getTargetOffset(2, 0); // -> {x: 1, y: 2}
 ```
+## Upgrading to version 2
+
+Some API changes were made for version 2, here's what you need to do to upgrade:
+
+* The `Direction` enumeration has been renamed to `CardinalDirection`
+* Instead of calling `fovMap.getFieldOfView(x, y, radius)`, call `WarpField.computeFieldOfView(fovMap, x, y, radius)`
+* Instead of calling `fov.get(x, y)`, call `fov.getVisible(dx, dy)`
+* IMPORTANT: `getVisible()` takes coordinates relative to the player's position - not absolute map coordinates!
+
+If you're using TypeScript, some of the type names have changed.  For instance, the type for the field of view is now `FieldOfView` instead of `MaskRectangle`.
 
 ## Details
 

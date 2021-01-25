@@ -1,56 +1,76 @@
 module.exports = {
     'env': {
         'browser': true,
-        'es6': true,
-        'node': true
+        'es2021': true,
+        'node': true,
     },
     'extends': [
         'eslint:recommended',
-        'plugin:@typescript-eslint/eslint-recommended',
-        'plugin:@typescript-eslint/recommended'
+        'plugin:@typescript-eslint/recommended',
     ],
-    'globals': {
-        'Atomics': 'readonly',
-        'SharedArrayBuffer': 'readonly'
-    },
     'parser': '@typescript-eslint/parser',
     'parserOptions': {
-        'ecmaVersion': 2018,
-        'sourceType': 'module'
+        'ecmaVersion': 12,
+        'sourceType': 'module',
     },
     'plugins': [
-        '@typescript-eslint'
+        '@typescript-eslint',
     ],
     'rules': {
         'indent': [
-            'off'
-        ],
-        'linebreak-style': [
-            'off'
+            'error',
+            4,
+            {
+                'SwitchCase': 1,
+            },
         ],
         'quotes': [
             'error',
             'single',
             {
-                'avoidEscape': true,
-                'allowTemplateLiterals': true
-            }
+                'allowTemplateLiterals': true,
+            },
         ],
         'semi': [
             'error',
-            'always'
+            'always',
         ],
-        '@typescript-eslint/explicit-function-return-type': [
-            'off'
+        'no-console': [
+            'error',
         ],
-        '@typescript-eslint/no-unused-vars': [
-            'off'
+        'eqeqeq': [
+            'error',
         ],
-        '@typescript-eslint/no-use-before-define': [
-            'off'
+        'no-invalid-this': [
+            'error',
         ],
-        '@typescript-eslint/explicit-module-boundary-types': [
-            'off'
-        ]
-    }
+        'no-throw-literal': [
+            'error',
+        ],
+        'curly': [
+            'error',
+        ],
+        'brace-style': [
+            'error',
+        ],
+        'camelcase': [
+            'error',
+        ],
+        'comma-dangle': [
+            'error',
+            'always-multiline',
+        ],
+        'comma-style': [
+            'error',
+        ],
+        'no-trailing-spaces': [
+            'error',
+        ],
+        'no-var': [
+            'error',
+        ],
+        '@typescript-eslint/no-shadow': [
+            'error',
+        ],
+    },
 };
