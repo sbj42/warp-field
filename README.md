@@ -6,7 +6,7 @@
 
 #### Portal-casting field-of-view algorithm
 
-[See the demo](https://sbj42.github.io/projects/warp-field-demo/www/)
+[See the demo](https://sbj42.github.io/warp-field/demo/www/)
 
 This is an extension to the simpler [WallyFOV](https://github.com/sbj42/warp-field) shadow-casting algorithm.
 
