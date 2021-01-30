@@ -25,18 +25,17 @@
     "prepublish": "npm run build",
     "demo:build": "npm run build && cd demo && webpack",
     "demo": "npm run build && cd demo && webpack serve",
-    "benchmark": "node benchmark/bench-field-of-view"
+    "benchmark": "high-score"
   },
   "devDependencies": {
-    "@types/benchmark": "^2.1.0",
     "@types/jest": "^26.0.20",
     "@types/node": "^14.14.21",
     "@types/seedrandom": "^2.4.28",
     "@typescript-eslint/eslint-plugin": "^4.14.0",
     "@typescript-eslint/parser": "^4.14.0",
-    "benchmark": "^2.1.4",
     "easystarjs": "^0.4.4",
     "eslint": "^7.18.0",
+    "high-score": "^0.1.0",
     "jest": "^26.6.3",
     "rimraf": "^3.0.2",
     "seedrandom": "^3.0.5",

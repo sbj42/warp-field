@@ -1,21 +1,17 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
-const Benchmark = require('benchmark');
+const { benchmark } = require('high-score');
 const seedrandom = require('seedrandom');
 
 const {FieldOfViewMap, CardinalDirection, computeFieldOfView} = require('../lib');
 
 /* eslint-disable no-console */
 
-const suite = new Benchmark.Suite();
-suite.on('cycle', (event) => {
-    console.log(`${event.target}`);
-});
 const width = 31;
 const height = 31;
 const origin = {x: 15, y: 15};
 {
     const map = new FieldOfViewMap('a', width, height);
-    suite.add('computeFieldOfView([15x15 empty field])', () => {
+    benchmark('computeFieldOfView-empty-15', () => {
         computeFieldOfView(map, origin.x, origin.y, 15);
     });
 }
@@ -39,7 +35,7 @@ const origin = {x: 15, y: 15};
             }
         }
     }
-    suite.add('computeFieldOfView([15x15 with some walls])', () => {
+    benchmark('computeFieldOfView-walls-15', () => {
         computeFieldOfView(map, origin.x, origin.y, 15);
     });
 }
@@ -54,7 +50,7 @@ const origin = {x: 15, y: 15};
             }
         }
     }
-    suite.add('computeFieldOfView([15x15 with some bodies])', () => {
+    benchmark('computeFieldOfView-bodies-15', () => {
         computeFieldOfView(map, origin.x, origin.y, 15);
     });
 }
@@ -68,9 +64,7 @@ const origin = {x: 15, y: 15};
     for (let x = 0; x < width; x ++) {
         map.addWarp(x, origin.y + 1, CardinalDirection.SOUTH, mapC, x, origin.y + 2);
     }
-    suite.add('computeFieldOfView([15x15 with some warps])', () => {
+    benchmark('computeFieldOfView-warps-15', () => {
         computeFieldOfView(map, origin.x, origin.y, 15);
     });
 }
-
-suite.run();
