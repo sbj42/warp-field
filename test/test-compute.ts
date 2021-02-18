@@ -370,6 +370,25 @@ describe('computeFieldOfView', () => {
 -----
 `);
     });
+    it('locations that are not visible still use warps', () => {
+        const map1 = new FieldOfViewMap('-', 7, 7);
+        const map2 = new FieldOfViewMap('B', 5, 5);
+        map1.addWall(2, 2, CardinalDirection.NORTH);
+        map1.addWarp(1, 1, CardinalDirection.NORTH, map2, 1, 0, true);
+        map1.addWarp(2, 1, CardinalDirection.NORTH, map2, 2, 0, true);
+        map1.addWarp(3, 1, CardinalDirection.NORTH, map2, 3, 0, true);
+        const fov = computeFieldOfView(map1, 2, 2, 2);
+        checkFov(fov, `
+-...-
+--.--
+--@--
+-----
+-----
+`);
+        checkLocation(fov, 0, -1, map1, 2, 1);
+        checkLocation(fov, 0, -2, map2, 2, 0);
+        checkLocation(fov, -1, -2, map2, 1, 0);
+    });
     it('gets example 1 right', () => {
         const map = new FieldOfViewMap('-', 11, 11);
         map.addBody(3, 3);
