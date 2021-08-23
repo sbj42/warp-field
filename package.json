@@ -28,24 +28,24 @@
     "benchmark": "high-score"
   },
   "devDependencies": {
-    "@types/jest": "^26.0.24",
-    "@types/node": "^14.17.11",
-    "@types/seedrandom": "^2.4.30",
+    "@types/jest": "^27.0.1",
+    "@types/node": "^16.7.1",
+    "@types/seedrandom": "^3.0.1",
     "@typescript-eslint/eslint-plugin": "^4.29.2",
     "@typescript-eslint/parser": "^4.29.2",
     "easystarjs": "^0.4.4",
     "eslint": "^7.32.0",
     "high-score": "^0.1.0",
-    "jest": "^26.6.3",
+    "jest": "^27.0.6",
     "rimraf": "^3.0.2",
     "seedrandom": "^3.0.5",
     "simplex-noise": "^2.4.0",
-    "ts-jest": "^26.5.6",
-    "ts-loader": "^8.3.0",
+    "ts-jest": "^27.0.5",
+    "ts-loader": "^9.2.5",
     "typescript": "^4.3.5",
     "webpack": "^5.51.1",
     "webpack-cli": "^4.8.0",
-    "webpack-dev-server": "^3.11.2"
+    "webpack-dev-server": "^4.0.0"
   },
   "dependencies": {
     "tiled-geometry": "^1.0.0"
